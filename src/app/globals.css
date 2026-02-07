@@ -1,0 +1,39 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #1a1a1a;
+  --primary: #003580;
+  --primary-hover: #004494;
+  --primary-light: #e8f0fa;
+  --accent: #0071c2;
+  --accent-cta: #ff5a5f;
+  --accent-cta-hover: #e04a4f;
+  --muted: #6b7280;
+  --border: #e5e7eb;
+  --surface: #f9fafb;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), system-ui, sans-serif;
+}
+
+/* Booking.com-style link and button accents */
+a[data-cta],
+.btn-primary {
+  background-color: var(--accent-cta);
+  color: white;
+}
+a[data-cta]:hover,
+.btn-primary:hover {
+  background-color: var(--accent-cta-hover);
+}
