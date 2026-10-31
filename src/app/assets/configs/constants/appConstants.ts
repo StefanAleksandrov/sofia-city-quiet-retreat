@@ -1,4 +1,4 @@
-import type { NavigationItem } from "@/app/configs/types/appTypes";
+import type { NavigationItem } from "@/app/assets/configs/types/appTypes";
 
 export const NAVIGATION_ITEMS: NavigationItem[] = [
   { href: "/gallery", textContent: "Gallery" },

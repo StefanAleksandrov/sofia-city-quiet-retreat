@@ -4,7 +4,7 @@ import {
   GALLERY_IMAGES,
   SHOWCASE_VIDEO_ID,
   SHOWCASE_VIDEO_PROVIDER,
-} from "@/app/configs/constants/siteConfig";
+} from "@/app/assets/configs/constants/siteConfig";
 
 export const metadata = {
   title: "Gallery",

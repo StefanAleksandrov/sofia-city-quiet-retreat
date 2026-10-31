@@ -1,4 +1,4 @@
-import { ADDRESS } from "@/app/configs/constants/siteConfig";
+import { ADDRESS } from "@/app/assets/configs/constants/siteConfig";
 
 export const metadata = {
   title: "Location",

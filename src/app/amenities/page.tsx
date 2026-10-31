@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { AMENITIES } from "@/app/configs/constants/siteConfig";
+import { AMENITIES } from "@/app/assets/configs/constants/siteConfig";
 
 const iconMap: Record<string, string> = {
   wifi: "📶",

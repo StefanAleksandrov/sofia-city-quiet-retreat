@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { GALLERY_IMAGES } from "@/app/configs/constants/siteConfig";
+import { GALLERY_IMAGES } from "@/app/assets/configs/constants/siteConfig";
 
 export default function GalleryStrip() {
   return (

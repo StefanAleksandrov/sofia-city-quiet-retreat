@@ -1,6 +1,5 @@
 import Link from "next/link";
-import { SITE_NAME } from "@/app/configs/constants/siteConfig";
-import GalleryStrip from "@/app/components/gallery-strip";
+import GalleryStrip from "@/app/assets/components/gallery-strip";
 
 export default function Home() {
   return (

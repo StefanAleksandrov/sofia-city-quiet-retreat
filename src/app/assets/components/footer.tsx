@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { NAVIGATION_ITEMS } from "@/app/configs/constants/appConstants";
-import { SITE_NAME } from "@/app/configs/constants/siteConfig";
+import { NAVIGATION_ITEMS } from "@/app/assets/configs/constants/appConstants";
+import { SITE_NAME } from "@/app/assets/configs/constants/siteConfig";
 
 export default function Footer() {
   return (

@@ -1,9 +1,8 @@
 import {
   BANK_TRANSFER,
-  BOOKED_DATE_RANGES,
   STRIPE_PAYMENT_LINK,
-} from "@/app/configs/constants/siteConfig";
-import BookingForm from "@/app/components/booking-form";
+} from "@/app/assets/configs/constants/siteConfig";
+import BookingForm from "@/app/assets/components/booking-form";
 
 export const metadata = {
   title: "Book now",
@@ -21,7 +20,7 @@ export default function BookPage() {
         </p>
       </div>
 
-      <BookingForm bookedDateRanges={BOOKED_DATE_RANGES} />
+      <BookingForm />
 
       <section className="mt-14 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-6">
         <h2 className="text-xl font-semibold text-[var(--foreground)]">Payment options</h2>
