@@ -66,7 +66,7 @@ export default function Home() {
               {
                 title: "Flexible stays",
                 titleBg: "Гъвкав престой",
-                text: "Short or longer stays. Contact us with your dates and we’ll confirm quickly.",
+                text: "Short or longer stays. Contact us with your dates and we'll confirm quickly.",
                 textBg: "Кратък или по-дълъг престой. Изпратете ни датите си и ще потвърдим бързо.",
               },
             ].map((item) => (
@@ -93,7 +93,7 @@ export default function Home() {
             </h2>
             <p className="mt-2 text-[var(--muted)]">
               <Text bg="Изпратете запитване с желаните дати. Ще отговорим до 24 часа с информация за наличността и плащането.">
-                Send an inquiry with your dates. We’ll reply within 24 hours with availability and payment details.
+                Send an inquiry with your dates. We'll reply within 24 hours with availability and payment details.
               </Text>
             </p>
             <Link

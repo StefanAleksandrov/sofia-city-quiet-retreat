@@ -7,11 +7,33 @@ const iconMap: Record<string, string> = {
   wifi: "📶",
   kitchen: "🍳",
   ac: "❄️",
-  washing: "🧺",
+  linen: "🛏️",
+  toiletries: "🧴",
+  cleaning: "🧹",
+  laundry: "🧺",
+  storage: "👔",
   tv: "📺",
   parking: "🅿️",
   elevator: "🛗",
-  location: "📍",
+  coffee: "☕",
+  cooker: "♨️",
+  cooking: "🍳",
+  dining: "🍽️",
+  fridge: "🧊",
+  hairdryer: "💨",
+  heating: "🌡️",
+  "hot-water": "🚿",
+  iron: "👕",
+  kettle: "🫖",
+  calendar: "📅",
+  microwave: "〰️",
+  mosquito: "🦟",
+  oven: "♨️",
+  balcony: "🌿",
+  entrance: "🚪",
+  "living-room": "🛋️",
+  blinds: "🪟",
+  cot: "🛏️",
 };
 
 export const metadata = amenitiesMetadata;
@@ -34,13 +56,20 @@ export default function AmenitiesPage() {
         {AMENITIES.map((item) => (
           <li
             key={item.label}
-            className="flex items-center gap-4 rounded-xl border border-[var(--border)] bg-white p-4"
+            className="flex items-start gap-4 rounded-xl border border-[var(--border)] bg-white p-4"
           >
-            <span className="text-2xl" aria-hidden>
+            <span className="mt-0.5 text-2xl" aria-hidden>
               {iconMap[item.icon] ?? "✓"}
             </span>
-            <span className="font-medium text-[var(--foreground)]">
-              <Text bg={item.labelBg}>{item.label}</Text>
+            <span>
+              <span className="font-medium text-[var(--foreground)]">
+                <Text bg={item.labelBg}>{item.label}</Text>
+              </span>
+              {item.detail && item.detailBg && (
+                <span className="mt-1 block text-sm text-[var(--muted)]">
+                  <Text bg={item.detailBg}>{item.detail}</Text>
+                </span>
+              )}
             </span>
           </li>
         ))}
