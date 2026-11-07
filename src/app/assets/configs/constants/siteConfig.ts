@@ -8,45 +8,83 @@ export const OWNER_EMAIL = "stefan.aleksandrov.mail@gmail.com";
 export const FROM_EMAIL = "onboarding@resend.dev"; // Resend: use this for testing; for production use an address on your verified domain
 
 /** Gallery: image paths are relative to the public directory. */
+export type GalleryRoomId =
+  | "living-room"
+  | "bedroom-1"
+  | "bedroom-2"
+  | "bedroom-3"
+  | "bathroom-1"
+  | "bathroom-2"
+  | "terrace-and-shared-spaces"
+  | "building";
+
+export const GALLERY_ROOM_LABELS: Record<
+  GalleryRoomId,
+  { title: string; titleBg: string }
+> = {
+  "living-room": {
+    title: "Living room, kitchen & dining area",
+    titleBg: "Всекидневна, кухня и трапезария",
+  },
+  "bedroom-1": { title: "Bedroom 1", titleBg: "Спалня 1" },
+  "bedroom-2": { title: "Bedroom 2", titleBg: "Спалня 2" },
+  "bedroom-3": { title: "Bedroom 3", titleBg: "Спалня 3" },
+  "bathroom-1": { title: "Bathroom 1", titleBg: "Баня 1" },
+  "bathroom-2": { title: "Bathroom 2", titleBg: "Баня 2" },
+  "terrace-and-shared-spaces": {
+    title: "Terrace & shared spaces",
+    titleBg: "Тераса и общи помещения",
+  },
+  building: { title: "Building", titleBg: "Сграда" },
+};
+
 export const GALLERY_IMAGES = [
-  { src: "/images/living%20room%20(0).jpg", alt: "Living room", altBg: "Всекидневна" },
-  { src: "/images/bedroom%201%20(1).JPEG", alt: "Bedroom 1", altBg: "Спалня 1" },
-  { src: "/images/bathroom%201%20(1).JPEG", alt: "Bathroom 1", altBg: "Баня 1" },
-  { src: "/images/terraces%20(1).JPEG", alt: "Terrace", altBg: "Тераса" },
-  { src: "/images/building%20(1)%20clear.jpg", alt: "Apartment building", altBg: "Жилищна сграда" },
-  { src: "/images/parking%20spot.JPEG", alt: "Parking spot", altBg: "Паркомясто" },
-  { src: "/images/living%20room%20(1).JPEG", alt: "Living room seating area", altBg: "Кът за сядане във всекидневната" },
-  { src: "/images/living%20room%20(2).JPEG", alt: "Living room", altBg: "Всекидневна" },
-  { src: "/images/living%20room%20(3).JPEG", alt: "Living room", altBg: "Всекидневна" },
-  { src: "/images/living%20room%20(4).JPEG", alt: "Living room", altBg: "Всекидневна" },
-  { src: "/images/living%20room%20(5).JPEG", alt: "Living room", altBg: "Всекидневна" },
-  { src: "/images/bedroom%201%20(2).JPEG", alt: "Bedroom 1", altBg: "Спалня 1" },
-  { src: "/images/bedroom%201%20(3).JPEG", alt: "Bedroom 1", altBg: "Спалня 1" },
-  { src: "/images/bedroom%201%20(4).JPEG", alt: "Bedroom 1", altBg: "Спалня 1" },
-  { src: "/images/bedroom%201%20(5).JPEG", alt: "Bedroom 1", altBg: "Спалня 1" },
-  { src: "/images/bedroom%201%20(6).JPEG", alt: "Bedroom 1", altBg: "Спалня 1" },
-  { src: "/images/bedroom%202%20(1).JPEG", alt: "Bedroom 2", altBg: "Спалня 2" },
-  { src: "/images/bedroom%202%20(2).JPEG", alt: "Bedroom 2", altBg: "Спалня 2" },
-  { src: "/images/bedroom%202%20(3).JPEG", alt: "Bedroom 2", altBg: "Спалня 2" },
-  { src: "/images/bedroom%202%20(4).JPEG", alt: "Bedroom 2", altBg: "Спалня 2" },
-  { src: "/images/bedroom%203%20(1).JPEG", alt: "Bedroom 3", altBg: "Спалня 3" },
-  { src: "/images/bedroom%203%20(2).JPEG", alt: "Bedroom 3", altBg: "Спалня 3" },
-  { src: "/images/bathroom%201%20(2).JPEG", alt: "Bathroom 1", altBg: "Баня 1" },
-  { src: "/images/bathroom%201%20(3).JPEG", alt: "Bathroom 1", altBg: "Баня 1" },
-  { src: "/images/bathroom%201%20(4).JPEG", alt: "Bathroom 1", altBg: "Баня 1" },
-  { src: "/images/bathroom%202%20(1).JPEG", alt: "Bathroom 2", altBg: "Баня 2" },
-  { src: "/images/bathroom%202%20(2).JPEG", alt: "Bathroom 2", altBg: "Баня 2" },
-  { src: "/images/terraces%20(2).JPEG", alt: "Terrace", altBg: "Тераса" },
-  { src: "/images/building%20(1).JPEG", alt: "Apartment building", altBg: "Жилищна сграда" },
-  { src: "/images/building%20(2).JPEG", alt: "Apartment building", altBg: "Жилищна сграда" },
-  { src: "/images/corridor%20(1).JPEG", alt: "Building corridor", altBg: "Коридор в сградата" },
-  { src: "/images/corridor%20(2).JPEG", alt: "Building corridor", altBg: "Коридор в сградата" },
-  { src: "/images/corridor%20(3).JPEG", alt: "Building corridor", altBg: "Коридор в сградата" },
-  { src: "/images/elevator.JPEG", alt: "Building elevator", altBg: "Асансьор в сградата" },
-  { src: "/images/laundry%20room%20(1).JPEG", alt: "Laundry room", altBg: "Перално помещение" },
-  { src: "/images/laundry%20room%20(2).JPEG", alt: "Laundry room", altBg: "Перално помещение" },
-  { src: "/images/parking%20spot.jpg", alt: "Parking spot", altBg: "Паркомясто" },
+  { src: "/images/living%20room%20(0).jpg", alt: "Living room", altBg: "Всекидневна", room: "living-room" },
+  { src: "/images/bedroom%201%20(1).JPEG", alt: "Bedroom 1", altBg: "Спалня 1", room: "bedroom-1" },
+  { src: "/images/bathroom%201%20(1).JPEG", alt: "Bathroom 1", altBg: "Баня 1", room: "bathroom-1" },
+  { src: "/images/terraces%20(1).JPEG", alt: "Terrace", altBg: "Тераса", room: "terrace-and-shared-spaces" },
+  { src: "/images/living%20room%20(1).JPEG", alt: "Living room seating area", altBg: "Кът за сядане във всекидневната", room: "living-room" },
+  { src: "/images/living%20room%20(2).JPEG", alt: "Living room", altBg: "Всекидневна", room: "living-room" },
+  { src: "/images/living%20room%20(3).JPEG", alt: "Living room", altBg: "Всекидневна", room: "living-room" },
+  { src: "/images/living%20room%20(4).JPEG", alt: "Living room", altBg: "Всекидневна", room: "living-room" },
+  { src: "/images/living%20room%20(5).JPEG", alt: "Living room", altBg: "Всекидневна", room: "living-room" },
+  { src: "/images/bedroom%201%20(2).JPEG", alt: "Bedroom 1", altBg: "Спалня 1", room: "bedroom-1" },
+  { src: "/images/bedroom%201%20(3).JPEG", alt: "Bedroom 1", altBg: "Спалня 1", room: "bedroom-1" },
+  { src: "/images/bedroom%201%20(4).JPEG", alt: "Bedroom 1", altBg: "Спалня 1", room: "bedroom-1" },
+  { src: "/images/bedroom%201%20(5).JPEG", alt: "Bedroom 1", altBg: "Спалня 1", room: "bedroom-1" },
+  { src: "/images/bedroom%201%20(6).JPEG", alt: "Bedroom 1", altBg: "Спалня 1", room: "bedroom-1" },
+  { src: "/images/bedroom%202%20(1).JPEG", alt: "Bedroom 2", altBg: "Спалня 2", room: "bedroom-2" },
+  { src: "/images/bedroom%202%20(2).JPEG", alt: "Bedroom 2", altBg: "Спалня 2", room: "bedroom-2" },
+  { src: "/images/bedroom%202%20(3).JPEG", alt: "Bedroom 2", altBg: "Спалня 2", room: "bedroom-2" },
+  { src: "/images/bedroom%202%20(4).JPEG", alt: "Bedroom 2", altBg: "Спалня 2", room: "bedroom-2" },
+  { src: "/images/bedroom%203%20(1).JPEG", alt: "Bedroom 3", altBg: "Спалня 3", room: "bedroom-3" },
+  { src: "/images/bedroom%203%20(2).JPEG", alt: "Bedroom 3", altBg: "Спалня 3", room: "bedroom-3" },
+  { src: "/images/bathroom%201%20(2).JPEG", alt: "Bathroom 1", altBg: "Баня 1", room: "bathroom-1" },
+  { src: "/images/bathroom%201%20(3).JPEG", alt: "Bathroom 1", altBg: "Баня 1", room: "bathroom-1" },
+  { src: "/images/bathroom%201%20(4).JPEG", alt: "Bathroom 1", altBg: "Баня 1", room: "bathroom-1" },
+  { src: "/images/bathroom%202%20(1).JPEG", alt: "Bathroom 2", altBg: "Баня 2", room: "bathroom-2" },
+  { src: "/images/bathroom%202%20(2).JPEG", alt: "Bathroom 2", altBg: "Баня 2", room: "bathroom-2" },
+  { src: "/images/terraces%20(2).JPEG", alt: "Terrace", altBg: "Тераса", room: "terrace-and-shared-spaces" },
+  { src: "/images/building%20(1).JPEG", alt: "Apartment building", altBg: "Жилищна сграда", room: "building" },
+  { src: "/images/building%20(2).JPEG", alt: "Apartment building", altBg: "Жилищна сграда", room: "building" },
+  { src: "/images/building%20(1)%20clear.jpg", alt: "Apartment building", altBg: "Жилищна сграда", room: "building" },
+  { src: "/images/corridor%20(1).JPEG", alt: "Building corridor", altBg: "Коридор в сградата", room: "terrace-and-shared-spaces" },
+  { src: "/images/corridor%20(2).JPEG", alt: "Building corridor", altBg: "Коридор в сградата", room: "terrace-and-shared-spaces" },
+  { src: "/images/corridor%20(3).JPEG", alt: "Building corridor", altBg: "Коридор в сградата", room: "terrace-and-shared-spaces" },
+  { src: "/images/laundry%20room%20(1).JPEG", alt: "Laundry room", altBg: "Перално помещение", room: "terrace-and-shared-spaces" },
+  { src: "/images/laundry%20room%20(2).JPEG", alt: "Laundry room", altBg: "Перално помещение", room: "terrace-and-shared-spaces" },
+  { src: "/images/elevator.JPEG", alt: "Building elevator", altBg: "Асансьор в сградата", room: "building" },
+  { src: "/images/parking%20spot.JPEG", alt: "Parking spot", altBg: "Паркомясто", room: "building" },
+  { src: "/images/parking%20spot.jpg", alt: "Parking spot", altBg: "Паркомясто", room: "building" },
 ];
+
+export const GALLERY_ROOMS = Object.entries(GALLERY_ROOM_LABELS)
+  .map(([room, labels]) => ({
+    id: room,
+    ...labels,
+    images: GALLERY_IMAGES.filter((image) => image.room === room),
+  }))
+  .filter((room) => room.images.length > 0);
 
 /** Optional: YouTube or Vimeo embed ID for a showcase video */
 export const SHOWCASE_VIDEO_ID = "lVNpOV7d0Mw";

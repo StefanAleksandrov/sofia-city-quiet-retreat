@@ -27,6 +27,150 @@ body {
   font-family: var(--font-sans), system-ui, sans-serif;
 }
 
+.gallery-slider {
+  --gallery-gap: 1rem;
+  display: flex;
+  gap: var(--gallery-gap);
+  overflow-x: auto;
+  padding-bottom: 0.75rem;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+
+.gallery-slider::-webkit-scrollbar {
+  display: none;
+}
+
+.gallery-slider > * {
+  flex: 0 0 calc((100% - var(--gallery-gap) / 10) / 1.1);
+  scroll-snap-align: start;
+}
+
+.gallery-photo-trigger {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  cursor: zoom-in;
+}
+
+.gallery-photo-expand {
+  position: absolute;
+  right: 0.75rem;
+  bottom: 0.75rem;
+  display: grid;
+  width: 2.5rem;
+  height: 2.5rem;
+  place-items: center;
+  border: 1px solid rgb(255 255 255 / 70%);
+  border-radius: 9999px;
+  background: rgb(0 0 0 / 55%);
+  color: white;
+  opacity: 0;
+  transition: opacity 150ms ease;
+}
+
+.gallery-photo-trigger:hover .gallery-photo-expand,
+.gallery-photo-trigger:focus-visible .gallery-photo-expand {
+  opacity: 1;
+}
+
+.gallery-photo-trigger:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+.gallery-image-dialog {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100dvh;
+  max-width: none;
+  max-height: none;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  background: #000;
+  color: white;
+}
+
+.gallery-image-dialog::backdrop {
+  background: rgb(0 0 0 / 95%);
+}
+
+.gallery-image-close {
+  position: absolute;
+  top: max(1rem, env(safe-area-inset-top));
+  right: max(1rem, env(safe-area-inset-right));
+  z-index: 1;
+  display: grid;
+  width: 2.75rem;
+  height: 2.75rem;
+  place-items: center;
+  border: 1px solid rgb(255 255 255 / 55%);
+  border-radius: 9999px;
+  background: rgb(0 0 0 / 55%);
+  color: white;
+}
+
+.gallery-image-close:hover {
+  background: rgb(255 255 255 / 20%);
+}
+
+.gallery-image-close:focus-visible {
+  outline: 2px solid white;
+  outline-offset: 3px;
+}
+
+.gallery-slider-arrow {
+  position: absolute;
+  top: 50%;
+  z-index: 1;
+  display: grid;
+  width: 2.5rem;
+  height: 2.5rem;
+  transform: translateY(-50%);
+  place-items: center;
+  border: 1px solid var(--border);
+  border-radius: 9999px;
+  background: white;
+  color: var(--foreground);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 15%);
+  transition:
+    background-color 150ms ease,
+    opacity 150ms ease;
+}
+
+.gallery-slider-arrow:hover:not(:disabled) {
+  background: var(--primary-light);
+}
+
+.gallery-slider-arrow:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.gallery-slider-arrow:disabled {
+  cursor: default;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.gallery-slider:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+}
+
+@media (min-width: 1024px) {
+  .gallery-slider > * {
+    flex-basis: calc(
+      (100% - var(--gallery-gap) - var(--gallery-gap) - var(--gallery-gap) / 10) /
+        3.1
+    );
+  }
+}
+
 .booking-calendar .rdp-months {
   position: relative;
 }
