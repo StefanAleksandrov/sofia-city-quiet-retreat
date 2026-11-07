@@ -17,7 +17,7 @@ export default function BookPage() {
         </h1>
         <p className="mt-2 text-[var(--muted)]">
           <Text bg="Попълнете датите и данните си. Ще отговорим до 24 часа с потвърждение и инструкции за плащане.">
-            Fill in your dates and details. We’ll reply within 24 hours with confirmation and payment instructions.
+            Fill in your dates and details. We'll reply within 24 hours with confirmation and payment instructions.
           </Text>
         </p>
       </div>
@@ -29,29 +29,31 @@ export default function BookPage() {
           <Text bg="Начини на плащане">Payment options</Text>
         </h2>
         <p className="mt-2 text-[var(--muted)]">
-          <Text bg="След като потвърдим датите, можете да платите с банков превод (без такси) или с карта.">
-            After we confirm your dates, you can pay by bank transfer (no fees) or by card if you prefer.
+          <Text bg="След като потвърдим датите, можете да платите с банков превод или с Revolut.">
+            After we confirm your dates, you can pay by bank transfer or by Revolut you prefer.
           </Text>
         </p>
 
         <div className="mt-6 space-y-6">
-          <div>
-            <h3 className="font-medium text-[var(--primary)]">
-              <Text bg="Банков превод">Bank transfer</Text>
-            </h3>
-            <p className="mt-1 text-sm text-[var(--muted)]">
-              <Text bg="Използвайте данните по-долу за банков превод. Ще изпратим точната сума и основанието в потвърждението.">
-                Use the details below for a bank transfer. We’ll send the exact amount and reference in our confirmation.
-              </Text>
-            </p>
-            <ul className="mt-3 space-y-1 rounded-lg bg-white p-4 text-sm">
-              <li><strong><Text bg="Банка:">Bank:</Text></strong> {BANK_TRANSFER.bankName}</li>
-              <li><strong><Text bg="Титуляр на сметката:">Account holder:</Text></strong> {BANK_TRANSFER.accountHolder}</li>
-              <li><strong>IBAN:</strong> {BANK_TRANSFER.iban}</li>
-              <li><strong>BIC:</strong> {BANK_TRANSFER.bic}</li>
-              <li><strong><Text bg="Основание:">Reference:</Text></strong> {BANK_TRANSFER.referenceNote}</li>
-            </ul>
-          </div>
+          {BANK_TRANSFER.iban &&
+            <div>
+              <h3 className="font-medium text-[var(--primary)]">
+                <Text bg="Банков превод">Bank transfer</Text>
+              </h3>
+              <p className="mt-1 text-sm text-[var(--muted)]">
+                <Text bg="Използвайте данните по-долу за банков превод. Ще изпратим точната сума и основанието в потвърждението.">
+                  Use the details below for a bank transfer. We’ll send the exact amount and reference in our confirmation.
+                </Text>
+              </p>
+                <ul className="mt-3 space-y-1 rounded-lg bg-white p-4 text-sm">
+                  <li><strong><Text bg="Банка:">Bank:</Text></strong> {BANK_TRANSFER.bankName}</li>
+                  <li><strong><Text bg="Титуляр на сметката:">Account holder:</Text></strong> {BANK_TRANSFER.accountHolder}</li>
+                  <li><strong>IBAN:</strong> {BANK_TRANSFER.iban}</li>
+                  <li><strong>BIC:</strong> {BANK_TRANSFER.bic}</li>
+                  <li><strong><Text bg="Основание:">Reference:</Text></strong> {BANK_TRANSFER.referenceNote}</li>
+                </ul>
+            </div>
+          }
 
           {STRIPE_PAYMENT_LINK && (
             <div>
@@ -60,7 +62,7 @@ export default function BookPage() {
               </h3>
               <p className="mt-1 text-sm text-[var(--muted)]">
                 <Text bg="Сигурно плащане чрез Stripe. Ще изпратим връзка за плащане след потвърждение на датите и сумата.">
-                  Secure payment via Stripe. We’ll send you the payment link after confirming your dates and total.
+                  Secure payment via Stripe. We'll send you the payment link after confirming your dates and total.
                 </Text>
               </p>
               <a

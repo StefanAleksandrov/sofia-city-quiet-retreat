@@ -15,7 +15,7 @@ export default function GalleryPage() {
   return (
     <>
       {SHOWCASE_VIDEO_ID && (
-        <section className="relative left-1/2 mb-6 aspect-video w-screen -translate-x-1/2 overflow-hidden bg-[var(--surface)]">
+        <section className="mb-6 aspect-video w-full overflow-hidden bg-[var(--surface)]">
           {SHOWCASE_VIDEO_PROVIDER === "youtube" ? (
             <LocalizedIframe
               src={`https://www.youtube.com/embed/${SHOWCASE_VIDEO_ID}?autoplay=1&mute=1&controls=1&playsinline=1&rel=0`}

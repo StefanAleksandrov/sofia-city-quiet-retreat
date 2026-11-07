@@ -32,8 +32,8 @@ export const GALLERY_ROOM_LABELS: Record<
   "bathroom-1": { title: "Bathroom 1", titleBg: "Баня 1" },
   "bathroom-2": { title: "Bathroom 2", titleBg: "Баня 2" },
   "terrace-and-shared-spaces": {
-    title: "Terrace & shared spaces",
-    titleBg: "Тераса и общи помещения",
+    title: "Terraces & shared spaces",
+    titleBg: "Тераси и общи помещения",
   },
   building: { title: "Building", titleBg: "Сграда" },
 };
@@ -118,11 +118,11 @@ export const BOOKED_DATE_RANGES: { checkIn: string; checkOut: string }[] = [
 
 /** Bank transfer instructions (shown after form submit). Customize for your bank. */
 export const BANK_TRANSFER = {
-  bankName: "Your Bank Name",
-  accountHolder: "Your Full Name",
-  iban: "BG00 XXXX XXXX XXXX XXXX XX",
-  bic: "XXXXXXXX",
-  referenceNote: "Booking: [Your name] + dates",
+  bankName: null,
+  accountHolder: null,
+  iban: null,
+  bic: null,
+  referenceNote: null,
 };
 
 /** Optional: Stripe Payment Link for card payments. Create at https://dashboard.stripe.com/payment-links */

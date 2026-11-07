@@ -63,22 +63,23 @@ export default function GalleryImageViewer({
 
   return (
     <>
-      <button
-        type="button"
-        aria-label={openLabel}
-        onClick={openFullscreen}
-        className="gallery-photo-trigger group"
-      >
+      <div className="gallery-photo">
         <LocalizedImage
           src={image.src}
           alt={image.alt}
           altBg={image.altBg}
           fill
-          className="object-cover transition-transform duration-300 group-hover:scale-105"
+          className="object-cover"
           sizes="(max-width: 1023px) 90vw, 32vw"
         />
-        <span aria-hidden="true" className="gallery-photo-expand">
+        <button
+          type="button"
+          aria-label={openLabel}
+          onClick={openFullscreen}
+          className="gallery-photo-trigger"
+        >
           <svg
+            aria-hidden="true"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
@@ -87,8 +88,8 @@ export default function GalleryImageViewer({
           >
             <path d="M8 3H5a2 2 0 0 0-2 2v3m13-5h3a2 2 0 0 1 2 2v3M3 16v3a2 2 0 0 0 2 2h3m13-5v3a2 2 0 0 1-2 2h-3" />
           </svg>
-        </span>
-      </button>
+        </button>
+      </div>
       <dialog
         ref={dialogRef}
         aria-label={openLabel}
