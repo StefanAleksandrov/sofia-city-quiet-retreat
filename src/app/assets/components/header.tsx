@@ -2,10 +2,17 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { NAVIGATION_ITEMS } from "@/app/assets/configs/constants/appConstants";
 import { SITE_NAME } from "@/app/assets/configs/constants/siteConfig";
+import { useLanguage } from "@/app/assets/components/language-provider";
+import LanguageToggle from "@/app/assets/components/language-toggle";
+import Text from "@/app/assets/components/text";
 
 export default function Header() {
+  const { translate } = useLanguage();
+  const pathname = usePathname();
+  const isBookPage = pathname === "/book";
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
   const mobileMenuButtonRef = useRef<HTMLButtonElement>(null);
@@ -47,7 +54,10 @@ export default function Header() {
         >
           {SITE_NAME}
         </Link>
-        <nav className="hidden items-center gap-1 sm:flex sm:gap-4" aria-label="Main">
+        <nav
+          className="hidden items-center gap-1 sm:flex sm:gap-4"
+          aria-label={translate("Main", "Основна навигация")}
+        >
           {NAVIGATION_ITEMS.map((item) => (
             <Link
               key={item.href}
@@ -58,17 +68,20 @@ export default function Header() {
                   : "rounded-md px-3 py-2 text-sm font-medium text-[var(--foreground)] hover:bg-[var(--surface)]"
               }
             >
-              {item.textContent}
+              <Text bg={item.bulgarianTextContent}>{item.textContent}</Text>
             </Link>
           ))}
+          <LanguageToggle />
         </nav>
         <div className="flex items-center gap-2 sm:hidden">
-          <Link
-            href="/book"
-            className="whitespace-nowrap rounded-md bg-[var(--accent-cta)] px-3 py-2 text-sm font-medium text-white hover:bg-[var(--accent-cta-hover)]"
-          >
-            Book now
-          </Link>
+          {!isBookPage && (
+            <Link
+              href="/book"
+              className="whitespace-nowrap rounded-md bg-[var(--accent-cta)] px-3 py-2 text-sm font-medium text-white hover:bg-[var(--accent-cta-hover)]"
+            >
+              <Text bg="Резервирайте">Book now</Text>
+            </Link>
+          )}
           <div
             ref={mobileMenuRef}
             className={`mobile-menu relative${isMobileMenuOpen ? " is-open" : ""}`}
@@ -76,7 +89,11 @@ export default function Header() {
             <button
               ref={mobileMenuButtonRef}
               type="button"
-              aria-label={isMobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
+              aria-label={
+                isMobileMenuOpen
+                  ? translate("Close navigation menu", "Затвори навигационното меню")
+                  : translate("Open navigation menu", "Отвори навигационното меню")
+              }
               aria-expanded={isMobileMenuOpen}
               aria-controls="mobile-navigation"
               onClick={() => setIsMobileMenuOpen((open) => !open)}
@@ -102,7 +119,7 @@ export default function Header() {
             {isMobileMenuOpen && (
               <nav
                 id="mobile-navigation"
-                aria-label="Mobile"
+                aria-label={translate("Mobile", "Мобилна навигация")}
                 className="absolute right-0 top-full z-50 mt-2 flex min-w-44 flex-col rounded-lg border border-[var(--border)] bg-white p-2 shadow-lg"
               >
                 {NAVIGATION_ITEMS.filter((item) => item.href !== "/book").map((item) => (
@@ -112,9 +129,17 @@ export default function Header() {
                     onClick={() => setIsMobileMenuOpen(false)}
                     className="rounded-md px-3 py-2 text-sm font-medium text-[var(--foreground)] hover:bg-[var(--surface)]"
                   >
-                    {item.textContent}
+                    <Text bg={item.bulgarianTextContent}>{item.textContent}</Text>
                   </Link>
                 ))}
+                <div className="mt-1 flex items-center justify-between border-t border-[var(--border)] px-3 pt-2">
+                  <span className="text-sm text-[var(--muted)]">
+                    {translate("Language", "Език")}
+                  </span>
+                  <LanguageToggle
+                    onLanguageChange={() => setIsMobileMenuOpen(false)}
+                  />
+                </div>
               </nav>
             )}
           </div>

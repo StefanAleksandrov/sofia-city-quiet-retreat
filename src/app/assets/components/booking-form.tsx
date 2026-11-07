@@ -3,7 +3,15 @@
 import { useEffect, useState } from "react";
 import { DayPicker } from "react-day-picker";
 import { sendBookingEmail } from "@/app/assets/actions/sendBookingEmail";
+import { useLanguage } from "@/app/assets/components/language-provider";
+import Text from "@/app/assets/components/text";
 import type { BookedDateRange } from "@/app/assets/lib/airbnbCalendar";
+import {
+  isAvailabilityResponse,
+  isDateInBookedRanges,
+  toYYYYMMDD,
+  translateBookingError,
+} from "@/app/assets/lib/bookingFormUtils";
 import {
   calculateReservationPrice,
   formatEuro,
@@ -23,49 +31,8 @@ const initial: BookingFormData = {
   message: "",
 };
 
-/** Booked range: checkIn/checkOut are "YYYY-MM-DD". checkOut is the day guests leave (exclusive). */
-function isDateInBookedRanges(
-  date: Date,
-  ranges: { checkIn: string; checkOut: string }[]
-): boolean {
-  const y = date.getFullYear();
-  const m = date.getMonth();
-  const d = date.getDate();
-  const t = new Date(y, m, d).getTime();
-
-  for (const range of ranges) {
-    const [ciY, ciM, ciD] = range.checkIn.split("-").map(Number);
-    const [coY, coM, coD] = range.checkOut.split("-").map(Number);
-    const checkInTime = new Date(ciY, ciM - 1, ciD).getTime();
-    const checkOutTime = new Date(coY, coM - 1, coD).getTime();
-    if (t >= checkInTime && t < checkOutTime) return true;
-  }
-  return false;
-}
-
-type AvailabilityResponse = { bookedDateRanges: BookedDateRange[] };
-
-function isAvailabilityResponse(value: unknown): value is AvailabilityResponse {
-  if (!value || typeof value !== "object" || !("bookedDateRanges" in value)) {
-    return false;
-  }
-
-  const ranges = value.bookedDateRanges;
-  return (
-    Array.isArray(ranges) &&
-    ranges.every(
-      (range) =>
-        range &&
-        typeof range === "object" &&
-        "checkIn" in range &&
-        typeof range.checkIn === "string" &&
-        "checkOut" in range &&
-        typeof range.checkOut === "string"
-    )
-  );
-}
-
 export default function BookingForm() {
+  const { language, translate } = useLanguage();
   const [form, setForm] = useState<BookingFormData>(initial);
   const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState("");
@@ -189,16 +156,28 @@ export default function BookingForm() {
   if (status === "success") {
     return (
       <div className="rounded-xl border border-green-200 bg-green-50 p-6 text-green-800">
-        <p className="font-semibold">Request sent successfully</p>
+        <p className="font-semibold">
+          <Text bg="Заявката е изпратена успешно">Request sent successfully</Text>
+        </p>
         <p className="mt-2 text-sm">
-          We've received your inquiry and will reply to <strong>{submittedEmail || "your email"}</strong> within 24 hours with availability and payment details.
+          <Text
+            bg={
+              <>
+                Получихме запитването ви и ще отговорим на{" "}
+                <strong>{submittedEmail || "имейла ви"}</strong> до 24 часа с информация за наличността и плащането.
+              </>
+            }
+          >
+            We've received your inquiry and will reply to{" "}
+            <strong>{submittedEmail || "your email"}</strong> within 24 hours with availability and payment details.
+          </Text>
         </p>
         <button
           type="button"
           onClick={() => setStatus("idle")}
           className="mt-4 text-sm font-medium text-green-700 underline hover:no-underline"
         >
-          Send another request
+          <Text bg="Изпратете друга заявка">Send another request</Text>
         </button>
       </div>
     );
@@ -207,13 +186,18 @@ export default function BookingForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-6 rounded-xl border border-[var(--border)] bg-white p-6">
       <div>
-        <span className="block text-sm font-medium text-[var(--foreground)]">Dates</span>
+        <span className="block text-sm font-medium text-[var(--foreground)]">
+          <Text bg="Дати">Dates</Text>
+        </span>
         <p className="mt-0.5 text-xs text-[var(--muted)]" role="status">
           {availabilityStatus === "loading"
-            ? "Loading Airbnb availability…"
+            ? translate("Loading Airbnb availability…", "Зареждане на наличността от Airbnb…")
             : availabilityStatus === "error"
-              ? availabilityError
-              : "Grey dates are booked or closed. Select your check-in and check-out within the next 12 months."}
+              ? translateBookingError(availabilityError, translate)
+              : translate(
+                  "Grey dates are booked or closed. Select your check-in and check-out within the next 12 months.",
+                  "Оцветените в сиво дати са заети или затворени. Изберете настаняване и напускане в рамките на следващите 12 месеца."
+                )}
         </p>
         <div className="mt-2 flex justify-center rounded-lg border border-[var(--border)] bg-[var(--surface)] p-4">
           <DayPicker
@@ -227,6 +211,32 @@ export default function BookingForm() {
             defaultMonth={new Date()}
             startMonth={new Date()}
             endMonth={new Date(lastBookableDay.getFullYear(), lastBookableDay.getMonth())}
+            lang={language === "bg" ? "bg-BG" : "en-GB"}
+            formatters={{
+              formatCaption: (month) =>
+                new Intl.DateTimeFormat(language === "bg" ? "bg-BG" : "en-GB", {
+                  month: "long",
+                  year: "numeric",
+                }).format(month),
+              formatWeekdayName: (date) =>
+                new Intl.DateTimeFormat(language === "bg" ? "bg-BG" : "en-GB", {
+                  weekday: "short",
+                }).format(date),
+            }}
+            labels={{
+              labelNav: () =>
+                translate("Month navigation", "Навигация по месеци"),
+              labelNext: () => translate("Next month", "Следващ месец"),
+              labelPrevious: () => translate("Previous month", "Предишен месец"),
+              labelWeekday: (date) =>
+                new Intl.DateTimeFormat(language === "bg" ? "bg-BG" : "en-GB", {
+                  weekday: "long",
+                }).format(date),
+              labelDayButton: (date) =>
+                new Intl.DateTimeFormat(language === "bg" ? "bg-BG" : "en-GB", {
+                  dateStyle: "full",
+                }).format(date),
+            }}
             className="booking-calendar rdp-root w-full max-w-none border-0 p-0"
             classNames={{
               months: "flex flex-wrap gap-4 justify-center",
@@ -253,7 +263,7 @@ export default function BookingForm() {
             {form.checkIn && form.checkOut
               ? `${form.checkIn} → ${form.checkOut}`
               : form.checkIn
-                ? `Check-in: ${form.checkIn} (select check-out)`
+                ? `${translate("Check-in", "Настаняване")}: ${form.checkIn} (${translate("select check-out", "изберете напускане")})`
                 : ""}
           </p>
         )}
@@ -263,40 +273,62 @@ export default function BookingForm() {
             aria-live="polite"
           >
             <h2 className="font-semibold text-[var(--foreground)]">
-              Estimated reservation price
+              <Text bg="Очаквана цена на резервацията">
+                Estimated reservation price
+              </Text>
             </h2>
             <p className="mt-1 text-[var(--muted)]">
-              {priceEstimate.nights} {priceEstimate.nights === 1 ? "night" : "nights"}:{" "}
-              {priceEstimate.weekdayNights} weekday × {formatEuro(WEEKDAY_RATE)} and{" "}
-              {priceEstimate.weekendNights} weekend × {formatEuro(WEEKEND_RATE)}
+              {priceEstimate.nights}{" "}
+              {language === "bg"
+                ? priceEstimate.nights === 1
+                  ? "нощувка"
+                  : "нощувки"
+                : priceEstimate.nights === 1
+                  ? "night"
+                  : "nights"}
+              : {priceEstimate.weekdayNights}{" "}
+              {translate("weekday nights", "делнични нощувки")} ×{" "}
+              {formatEuro(WEEKDAY_RATE, language === "bg" ? "bg-BG" : "en-IE")}{" "}
+              {translate("and", "и")} {priceEstimate.weekendNights}{" "}
+              {translate("weekend nights", "уикенд нощувки")} ×{" "}
+              {formatEuro(WEEKEND_RATE, language === "bg" ? "bg-BG" : "en-IE")}
             </p>
             <dl className="mt-3 space-y-1">
               <div className="flex justify-between gap-4">
-                <dt>Subtotal</dt>
-                <dd>{formatEuro(priceEstimate.subtotal)}</dd>
+                <dt><Text bg="Междинна сума">Subtotal</Text></dt>
+                <dd>{formatEuro(priceEstimate.subtotal, language === "bg" ? "bg-BG" : "en-IE")}</dd>
               </div>
               {priceEstimate.discountRate > 0 && (
                 <div className="flex justify-between gap-4 text-green-700">
-                  <dt>Long-stay discount ({priceEstimate.discountRate * 100}%)</dt>
+                  <dt>
+                    <Text bg="Отстъпка за дълъг престой">
+                      Long-stay discount
+                    </Text>{" "}
+                    ({priceEstimate.discountRate * 100}%)
+                  </dt>
                   <dd>
-                    −{formatEuro(priceEstimate.discountAmount)}
+                    −{formatEuro(priceEstimate.discountAmount, language === "bg" ? "bg-BG" : "en-IE")}
                   </dd>
                 </div>
               )}
               <div className="flex justify-between gap-4 border-t border-[var(--border)] pt-2 font-semibold">
-                <dt>Estimated total</dt>
-                <dd>{formatEuro(priceEstimate.total)}</dd>
+                <dt><Text bg="Очаквана обща сума">Estimated total</Text></dt>
+                <dd>{formatEuro(priceEstimate.total, language === "bg" ? "bg-BG" : "en-IE")}</dd>
               </div>
             </dl>
             <p className="mt-2 text-xs text-[var(--muted)]">
-              Informational estimate; the host will confirm the final price.
+              <Text bg="Ориентировъчна цена; домакинът ще потвърди крайната сума.">
+                Informational estimate; the host will confirm the final price.
+              </Text>
             </p>
           </div>
         )}
       </div>
 
       <label className="block">
-        <span className="block text-sm font-medium text-[var(--foreground)]">Guests</span>
+        <span className="block text-sm font-medium text-[var(--foreground)]">
+          <Text bg="Гости">Guests</Text>
+        </span>
         <select
           required
           value={form.guests}
@@ -304,14 +336,18 @@ export default function BookingForm() {
           className="mt-1 w-full rounded-lg border border-[var(--border)] px-3 py-2 focus:border-[var(--accent)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)]"
         >
           {[1, 2, 3, 4, 5, 6, 7].map((n) => (
-            <option key={n} value={n}>{n} {n === 1 ? "guest" : "guests"}</option>
+            <option key={n} value={n}>
+              {n} {language === "bg" ? (n === 1 ? "гост" : "гости") : (n === 1 ? "guest" : "guests")}
+            </option>
           ))}
         </select>
       </label>
 
       <div className="grid gap-4 sm:grid-cols-2">
         <label className="block">
-          <span className="block text-sm font-medium text-[var(--foreground)]">Your name</span>
+          <span className="block text-sm font-medium text-[var(--foreground)]">
+            <Text bg="Вашето име">Your name</Text>
+          </span>
           <input
             type="text"
             required
@@ -322,7 +358,9 @@ export default function BookingForm() {
           />
         </label>
         <label className="block">
-          <span className="block text-sm font-medium text-[var(--foreground)]">Email</span>
+          <span className="block text-sm font-medium text-[var(--foreground)]">
+            <Text bg="Имейл">Email</Text>
+          </span>
           <input
             type="email"
             required
@@ -335,7 +373,9 @@ export default function BookingForm() {
       </div>
 
       <label className="block">
-        <span className="block text-sm font-medium text-[var(--foreground)]">Phone (optional)</span>
+        <span className="block text-sm font-medium text-[var(--foreground)]">
+          <Text bg="Телефон (по избор)">Phone (optional)</Text>
+        </span>
         <input
           type="tel"
           autoComplete="tel"
@@ -346,18 +386,25 @@ export default function BookingForm() {
       </label>
 
       <label className="block">
-        <span className="block text-sm font-medium text-[var(--foreground)]">Message (optional)</span>
+        <span className="block text-sm font-medium text-[var(--foreground)]">
+          <Text bg="Съобщение (по избор)">Message (optional)</Text>
+        </span>
         <textarea
           rows={4}
           value={form.message}
           onChange={(e) => setForm((f) => ({ ...f, message: e.target.value }))}
-          placeholder="Special requests, arrival time, etc."
+          placeholder={translate(
+            "Special requests, arrival time, etc.",
+            "Специални изисквания, час на пристигане и др."
+          )}
           className="mt-1 w-full rounded-lg border border-[var(--border)] px-3 py-2 focus:border-[var(--accent)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)]"
         />
       </label>
 
       {status === "error" && (
-        <p className="rounded-lg bg-red-50 p-3 text-sm text-red-700">{errorMessage}</p>
+        <p className="rounded-lg bg-red-50 p-3 text-sm text-red-700">
+          {translateBookingError(errorMessage, translate)}
+        </p>
       )}
 
       <button
@@ -370,15 +417,12 @@ export default function BookingForm() {
         }
         className="w-full rounded-lg bg-[var(--accent-cta)] py-3 font-semibold text-white transition hover:bg-[var(--accent-cta-hover)] disabled:opacity-70"
       >
-        {status === "sending" ? "Sending…" : "Send booking request"}
+        {status === "sending" ? (
+          <Text bg="Изпращане…">Sending…</Text>
+        ) : (
+          <Text bg="Изпратете заявка за резервация">Send booking request</Text>
+        )}
       </button>
     </form>
   );
-}
-
-function toYYYYMMDD(d: Date): string {
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate()).padStart(2, "0");
-  return `${y}-${m}-${day}`;
 }

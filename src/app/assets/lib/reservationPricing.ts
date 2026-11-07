@@ -73,8 +73,8 @@ export function calculateReservationPrice(
   };
 }
 
-export function formatEuro(amount: number): string {
-  return new Intl.NumberFormat("en-IE", {
+export function formatEuro(amount: number, locale = "en-IE"): string {
+  return new Intl.NumberFormat(locale, {
     style: "currency",
     currency: "EUR",
   }).format(amount);

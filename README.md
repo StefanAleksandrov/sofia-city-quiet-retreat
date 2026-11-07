@@ -8,6 +8,7 @@ A conversion-focused website for short-term apartment bookings. No login require
 - **Gallery** for photos and optional YouTube/Vimeo video
 - **Book now** form that sends inquiries to your inbox (Resend)
 - **Payment**: bank transfer details on the site; optional [Stripe Payment Link](https://dashboard.stripe.com/payment-links) for card payments
+- **Languages**: English and Bulgarian, with explicit selections saved in the browser; new visitors are shown Bulgarian when the hosting platform reports Bulgaria or their device timezone is set to Sofia, and English otherwise
 - **SEO**: metadata, JSON-LD (Accommodation), sitemap, robots
 
 ## Setup

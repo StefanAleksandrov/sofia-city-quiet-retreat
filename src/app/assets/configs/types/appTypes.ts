@@ -1,6 +1,7 @@
 export interface NavigationItem {
   href: string;
   textContent: string;
+  bulgarianTextContent: string;
 }
 
 export interface BookingFormData {

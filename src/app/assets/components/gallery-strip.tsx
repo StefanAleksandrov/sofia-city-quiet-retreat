@@ -1,18 +1,21 @@
-import Image from "next/image";
 import Link from "next/link";
 import { GALLERY_IMAGES } from "@/app/assets/configs/constants/siteConfig";
+import Text from "@/app/assets/components/text";
+import LocalizedImage from "@/app/assets/components/localized-image";
 
 export default function GalleryStrip() {
   return (
     <section className="border-y border-[var(--border)] bg-white">
       <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
         <div className="flex items-center justify-between">
-          <h2 className="text-xl font-semibold text-[var(--foreground)]">Photos & video</h2>
+          <h2 className="text-xl font-semibold text-[var(--foreground)]">
+            <Text bg="Снимки и видео">Photos & video</Text>
+          </h2>
           <Link
             href="/gallery"
             className="text-sm font-medium text-[var(--accent)] hover:underline"
           >
-            View gallery →
+            <Text bg="Разгледайте галерията →">View gallery →</Text>
           </Link>
         </div>
         <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-6">
@@ -22,9 +25,10 @@ export default function GalleryStrip() {
               href="/gallery"
               className="relative aspect-[4/3] overflow-hidden rounded-lg border border-[var(--border)]"
             >
-              <Image
+              <LocalizedImage
                 src={img.src}
                 alt={img.alt}
+                altBg={img.altBg}
                 fill
                 className="object-cover transition hover:scale-105"
                 sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 16vw"
