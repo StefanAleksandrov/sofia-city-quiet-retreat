@@ -11,11 +11,20 @@ export const rootMetadata: Metadata = {
   },
   description: SITE_DESCRIPTION,
   keywords: [
+    SITE_NAME,
+    SITE_DESCRIPTION,
     "Sofia apartment rental",
     "short-term rental Sofia",
     "Sofia accommodation",
     "apartment Sofia",
     "vacation rental Sofia",
+    "rental",
+    "apartment",
+    "short-term rental",
+    "vacation rental",
+    "Sofia",
+    "Bulgaria",
+    "retreat",
   ],
   authors: [{ name: SITE_NAME }],
   openGraph: {
@@ -38,13 +47,13 @@ export const rootMetadata: Metadata = {
 export const amenitiesMetadata: Metadata = {
   title: "Amenities",
   description:
-    "What’s included: WiFi, kitchen, air conditioning, washing machine, TV, parking, and more.",
+    "What's included: WiFi, kitchen, air conditioning, washing machine, TV, parking, and more.",
 };
 
 export const bookMetadata: Metadata = {
   title: "Book now",
   description:
-    "Send a booking request for your dates. We’ll confirm availability and send payment instructions (bank transfer or card).",
+    "Send a booking request for your dates. We'll confirm availability and send payment instructions (bank transfer or card).",
 };
 
 export const galleryMetadata: Metadata = {

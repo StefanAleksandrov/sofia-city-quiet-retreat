@@ -42,7 +42,7 @@ export default function BookPage() {
               </h3>
               <p className="mt-1 text-sm text-[var(--muted)]">
                 <Text bg="Използвайте данните по-долу за банков превод. Ще изпратим точната сума и основанието в потвърждението.">
-                  Use the details below for a bank transfer. We’ll send the exact amount and reference in our confirmation.
+                  Use the details below for a bank transfer. We'll send the exact amount and reference in our confirmation.
                 </Text>
               </p>
                 <ul className="mt-3 space-y-1 rounded-lg bg-white p-4 text-sm">
