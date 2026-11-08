@@ -15,7 +15,9 @@ export class CalendarSyncError extends Error {
 export async function loadCalendar(
   provider: "Airbnb" | "Booking.com",
   feedUrl: string,
-  supportedHosts: readonly string[]
+  supportedHosts: readonly string[],
+  cacheTag: string,
+  forceRefresh = false
 ): Promise<BookedDateRange[]> {
   let url: URL;
   try {
@@ -35,7 +37,9 @@ export async function loadCalendar(
   try {
     response = await fetch(url, {
       headers: { Accept: "text/calendar" },
-      next: { revalidate: 900 },
+      ...(forceRefresh
+        ? { cache: "no-store" as const }
+        : { next: { revalidate: 900, tags: [cacheTag] } }),
       signal: AbortSignal.timeout(15000),
     });
   } catch {
