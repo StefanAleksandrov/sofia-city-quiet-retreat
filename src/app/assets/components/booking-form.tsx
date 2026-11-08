@@ -5,7 +5,7 @@ import { DayPicker } from "react-day-picker";
 import { sendBookingEmail } from "@/app/assets/actions/sendBookingEmail";
 import { useLanguage } from "@/app/assets/components/language-provider";
 import Text from "@/app/assets/components/text";
-import type { BookedDateRange } from "@/app/assets/lib/airbnbCalendar";
+import type { BookedDateRange } from "@/app/assets/lib/icalendar";
 import {
   isAvailabilityResponse,
   isDateInBookedRanges,

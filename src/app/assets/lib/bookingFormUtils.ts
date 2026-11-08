@@ -1,4 +1,4 @@
-import type { BookedDateRange } from "@/app/assets/lib/airbnbCalendar";
+import type { BookedDateRange } from "@/app/assets/lib/icalendar";
 
 type AvailabilityResponse = { bookedDateRanges: BookedDateRange[] };
 
@@ -51,6 +51,10 @@ export function translateBookingError(
     "Airbnb calendar URL must use a supported Airbnb HTTPS address.": "Адресът на календара трябва да е поддържан HTTPS адрес на Airbnb.",
     "Airbnb calendar response is unexpectedly large.": "Отговорът от календара на Airbnb е неочаквано голям.",
     "Airbnb calendar could not be retrieved or contains invalid calendar data.": "Календарът на Airbnb не можа да бъде извлечен или съдържа невалидни данни.",
+    "Booking.com calendar URL is invalid.": "Адресът на календара на Booking.com е невалиден.",
+    "Booking.com calendar URL must use a supported Booking.com HTTPS address.": "Адресът на календара трябва да е поддържан HTTPS адрес на Booking.com.",
+    "Booking.com calendar response is unexpectedly large.": "Отговорът от календара на Booking.com е неочаквано голям.",
+    "Booking.com calendar could not be retrieved or contains invalid calendar data.": "Календарът на Booking.com не можа да бъде извлечен или съдържа невалидни данни.",
     "Email is not configured. Please set RESEND_API_KEY.": "Имейлът не е настроен. Моля, задайте RESEND_API_KEY.",
     "Booking dates must use YYYY-MM-DD format.": "Датите за резервация трябва да са във формат YYYY-MM-DD.",
     "Booking dates must be valid calendar dates.": "Датите за резервация трябва да са валидни календарни дати.",
@@ -62,6 +66,15 @@ export function translateBookingError(
     return translate(
       message,
       `Календарът на Airbnb не можа да бъде зареден (HTTP ${calendarStatus[1]}).`
+    );
+  }
+  const bookingCalendarStatus = message.match(
+    /^Booking\.com calendar could not be loaded \(HTTP (\d+)\)\.$/
+  );
+  if (bookingCalendarStatus) {
+    return translate(
+      message,
+      `Календарът на Booking.com не можа да бъде зареден (HTTP ${bookingCalendarStatus[1]}).`
     );
   }
   const bulgarian = knownErrors[message];
