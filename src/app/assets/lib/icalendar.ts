@@ -28,7 +28,7 @@ function parseCalendarDate(lines: string[], property: "DTSTART" | "DTEND"): stri
   return `${year}-${month}-${day}`;
 }
 
-export function parseAirbnbCalendar(ical: string): BookedDateRange[] {
+export function parseICalendar(ical: string): BookedDateRange[] {
   const lines = ical.replace(/\r?\n[ \t]/g, "").split(/\r?\n/);
   while (lines[lines.length - 1] === "") lines.pop();
   if (
