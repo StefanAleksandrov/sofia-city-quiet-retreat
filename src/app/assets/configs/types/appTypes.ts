@@ -7,6 +7,8 @@ export interface NavigationItem {
 export interface BookingFormData {
   checkIn: string;
   checkOut: string;
+  earlyCheckIn: boolean;
+  lateCheckOut: boolean;
   guests: number;
   name: string;
   email: string;
