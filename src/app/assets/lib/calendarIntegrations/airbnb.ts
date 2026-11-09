@@ -1,6 +1,5 @@
+import { AIRBNB_CACHE_TAG } from "../../configs/constants/bookingConfig";
 import { loadCalendar, CalendarSyncError } from "./shared";
-
-export const AIRBNB_CACHE_TAG = "calendar-airbnb";
 
 export function getAirbnbBookedDateRanges(forceRefresh = false) {
   const feedUrl = process.env.AIRBNB_ICAL_URL;

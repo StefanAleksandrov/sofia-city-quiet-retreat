@@ -1,7 +1,8 @@
 import { revalidateTag } from "next/cache";
 import { mergeBookedDateRanges } from "@/app/assets/lib/icalendar";
-import { AIRBNB_CACHE_TAG, getAirbnbBookedDateRanges } from "./airbnb";
-import { BOOKING_COM_CACHE_TAG, getBookingComBookedDateRanges } from "./bookingCom";
+import { getAirbnbBookedDateRanges } from "./airbnb";
+import { getBookingComBookedDateRanges } from "./bookingCom";
+import { AIRBNB_CACHE_TAG, BOOKING_COM_CACHE_TAG } from "../../configs/constants/bookingConfig";
 
 export { CalendarSyncError } from "./shared";
 

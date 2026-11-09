@@ -2,18 +2,8 @@
 
 import { useCallback, useEffect, useRef } from "react";
 import LocalizedImage from "@/app/assets/components/localized-image";
-import { useLanguage } from "@/app/assets/components/language-provider";
-import type { GALLERY_IMAGES } from "@/app/assets/configs/constants/siteConfig";
-
-type GalleryImage = (typeof GALLERY_IMAGES)[number];
-
-type PageScrollState = {
-  overflow: string;
-  position: string;
-  top: string;
-  width: string;
-  scrollY: number;
-};
+import { useLanguage } from "@/app/assets/hooks/useLanguage";
+import type { GalleryImage, PageScrollState } from "../configs/types/galleryTypes";
 
 export default function GalleryImageViewer({
   image,

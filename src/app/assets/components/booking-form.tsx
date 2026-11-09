@@ -3,23 +3,18 @@
 import { useEffect, useState } from "react";
 import { DayPicker } from "react-day-picker";
 import { sendBookingEmail } from "@/app/assets/actions/sendBookingEmail";
-import { useLanguage } from "@/app/assets/components/language-provider";
+import { useLanguage } from "@/app/assets/hooks/useLanguage";
 import Text from "@/app/assets/components/text";
-import type { BookedDateRange } from "@/app/assets/lib/icalendar";
 import {
   isAvailabilityResponse,
   isDateInBookedRanges,
   toYYYYMMDD,
   translateBookingError,
 } from "@/app/assets/lib/bookingFormUtils";
-import {
-  calculateReservationPrice,
-  formatEuro,
-  WEEKDAY_RATE,
-  WEEKEND_RATE,
-} from "@/app/assets/lib/reservationPricing";
-import type { BookingFormData } from "@/app/assets/configs/types/appTypes";
+import { calculateReservationPrice, formatEuro } from "@/app/assets/lib/reservationPricing";
+import type { BookedDateRange, BookingFormData } from "@/app/assets/configs/types/appTypes";
 import "react-day-picker/style.css";
+import { WEEKDAY_RATE, WEEKEND_RATE } from "../configs/constants/bookingConfig";
 
 const initial: BookingFormData = {
   checkIn: "",

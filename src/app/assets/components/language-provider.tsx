@@ -1,18 +1,12 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
-
-export type Language = "en" | "bg";
-
-type LanguageContextValue = {
-  language: Language;
-  setLanguage: (language: Language) => void;
-  translate: (english: string, bulgarian: string) => string;
-};
-
-const LanguageContext = createContext<LanguageContextValue | null>(null);
-const LANGUAGE_STORAGE_KEY = "sofia-city-quiet-retreat-language";
-const LANGUAGE_COOKIE_NAME = "sofia-city-quiet-retreat-language";
+import { useEffect, useState } from "react";
+import type { Language } from "../configs/types/appTypes";
+import {
+  LANGUAGE_COOKIE_NAME,
+  LANGUAGE_STORAGE_KEY,
+} from "../configs/constants/languageConfig";
+import { LanguageContext } from "../hooks/useLanguage";
 
 export function LanguageProvider({
   children,
@@ -70,12 +64,4 @@ export function LanguageProvider({
       {children}
     </LanguageContext.Provider>
   );
-}
-
-export function useLanguage() {
-  const context = useContext(LanguageContext);
-  if (!context) {
-    throw new Error("useLanguage must be used within a LanguageProvider.");
-  }
-  return context;
 }

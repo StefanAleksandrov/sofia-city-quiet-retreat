@@ -4,9 +4,13 @@ import { fileURLToPath } from "node:url";
 const nextCli = fileURLToPath(
   new URL("../node_modules/next/dist/bin/next", import.meta.url),
 );
-const next = spawn(process.execPath, [nextCli, "start", ...process.argv.slice(2)], {
-  stdio: ["inherit", "pipe", "pipe"],
-});
+const next = spawn(
+  process.execPath,
+  [nextCli, "dev", "--turbopack", ...process.argv.slice(2)],
+  {
+    stdio: ["inherit", "pipe", "pipe"],
+  },
+);
 
 let localUrl;
 let ready = false;

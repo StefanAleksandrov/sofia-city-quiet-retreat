@@ -3,12 +3,8 @@
 import { Resend } from "resend";
 import type { BookingFormData } from "@/app/assets/configs/types/appTypes";
 import { OWNER_EMAIL, FROM_EMAIL, SITE_NAME } from "@/app/assets/configs/constants/siteConfig";
-import {
-  calculateReservationPrice,
-  formatEuro,
-  WEEKDAY_RATE,
-  WEEKEND_RATE,
-} from "@/app/assets/lib/reservationPricing";
+import { calculateReservationPrice, formatEuro } from "@/app/assets/lib/reservationPricing";
+import { WEEKDAY_RATE, WEEKEND_RATE } from "../configs/constants/bookingConfig";
 
 export async function sendBookingEmail(data: BookingFormData): Promise<{ ok: boolean; error?: string }> {
   const apiKey = process.env.RESEND_API_KEY;

@@ -1,8 +1,5 @@
 import type { Metadata } from "next";
-import { SITE_NAME, SITE_URL } from "@/app/assets/configs/constants/siteConfig";
-
-export const SITE_DESCRIPTION =
-  "Book a short-term apartment in Sofia. Quiet, central, fully equipped. Direct booking with the host — no booking fees.";
+import { SITE_NAME, SITE_DESCRIPTION, SITE_URL } from "@/app/assets/configs/constants/siteConfig";
 
 export const rootMetadata: Metadata = {
   title: {

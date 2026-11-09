@@ -1,17 +1,5 @@
-export const WEEKDAY_RATE = 180;
-export const WEEKEND_RATE = 210;
-
-export type ReservationPrice = {
-  weekdayNights: number;
-  weekendNights: number;
-  nights: number;
-  weekdaySubtotal: number;
-  weekendSubtotal: number;
-  subtotal: number;
-  discountRate: number;
-  discountAmount: number;
-  total: number;
-};
+import { WEEKDAY_RATE, WEEKEND_RATE } from "../configs/constants/bookingConfig";
+import type { ReservationPrice } from "../configs/types/bookingTypes";
 
 function parseDate(value: string): Date {
   const match = value.match(/^(\d{4})-(\d{2})-(\d{2})$/);

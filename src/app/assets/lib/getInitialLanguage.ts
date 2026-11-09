@@ -1,5 +1,5 @@
 import { cookies, headers } from "next/headers";
-import type { Language } from "@/app/assets/components/language-provider";
+import type { Language } from "../configs/types/appTypes";
 
 export async function getInitialLanguage(): Promise<{
   initialLanguage: Language;

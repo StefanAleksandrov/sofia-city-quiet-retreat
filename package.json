@@ -5,8 +5,10 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
-    "start": "node scripts/start.mjs",
-    "typecheck": "tsc --noEmit"
+    "start": "npm install && node scripts/start.mjs",
+    "start-dist": "npm run build && next start",
+    "typecheck": "tsc --noEmit",
+    "build-check": "npm run typecheck && npm run build"
   },
   "dependencies": {
     "next": "16.4.5",

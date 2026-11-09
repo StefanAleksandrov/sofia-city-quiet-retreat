@@ -2,11 +2,9 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import Text from "@/app/assets/components/text";
-import { useLanguage } from "@/app/assets/components/language-provider";
+import { useLanguage } from "@/app/assets/hooks/useLanguage";
 import GalleryImageViewer from "@/app/assets/components/gallery-image-viewer";
-import type { GALLERY_ROOMS } from "@/app/assets/configs/constants/siteConfig";
-
-type GalleryRoom = (typeof GALLERY_ROOMS)[number];
+import type { GalleryRoom } from "../configs/types/galleryTypes";
 
 export default function GalleryRoomSlider({
   room,

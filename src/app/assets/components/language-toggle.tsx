@@ -1,6 +1,6 @@
 "use client";
 
-import { useLanguage } from "@/app/assets/components/language-provider";
+import { useLanguage } from "@/app/assets/hooks/useLanguage";
 
 export default function LanguageToggle({
   onLanguageChange,
