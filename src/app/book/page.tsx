@@ -30,7 +30,7 @@ export default function BookPage() {
         </h2>
         <p className="mt-2 text-[var(--muted)]">
           <Text bg="След като потвърдим датите, можете да платите с банков превод или с Revolut.">
-            After we confirm your dates, you can pay by bank transfer or by Revolut you prefer.
+            After we confirm your dates, you can pay by bank transfer or by Revolut as you prefer.
           </Text>
         </p>
 
