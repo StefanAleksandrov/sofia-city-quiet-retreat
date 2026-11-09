@@ -1,9 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { NAVIGATION_ITEMS } from "@/app/assets/configs/constants/appConstants";
+import { NAVIGATION_ITEMS } from "@/app/assets/configs/constants/appConfig";
 import { SITE_NAME } from "@/app/assets/configs/constants/siteConfig";
-import { useLanguage } from "@/app/assets/components/language-provider";
+import { useLanguage } from "@/app/assets/hooks/useLanguage";
 import Text from "@/app/assets/components/text";
 
 export default function Footer() {

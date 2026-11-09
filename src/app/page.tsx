@@ -52,10 +52,10 @@ export default function Home() {
                 textBg: "Резервирайте директно и платете на домакина. Без посредници и допълнителни такси.",
               },
               {
-                title: "Central & quiet",
-                titleBg: "Централно и тихо",
-                text: "Best of both: walk to the center, sleep in a peaceful neighborhood.",
-                textBg: "Най-доброто от двата свята: разходете се до центъра и си починете в спокоен квартал.",
+                title: "Well-connected & quiet",
+                titleBg: "Комуникативно и тихо",
+                text: "Best of both worlds: get to the center in less than 15 mins with the metro, sleep in a peaceful neighborhood.",
+                textBg: "Най-доброто от двата свята: разходете се до центъра с метро за под 15 минути и си починете в спокоен квартал.",
               },
               {
                 title: "Fully equipped",

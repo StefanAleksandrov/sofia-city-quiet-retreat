@@ -2,21 +2,18 @@
  * Site configuration for Sofia City Quiet Retreat for listing, media, and payment details.
  */
 
+import type {
+  GalleryImage,
+  GalleryRoom,
+  GalleryRoomId,
+} from "../types/galleryTypes";
+
 export const SITE_NAME = "Sofia City Quiet Retreat";
+export const SITE_DESCRIPTION =
+  "Book a short-term apartment in Sofia. Quiet, central, fully equipped. Direct booking with the host — no booking fees.";
 export const SITE_URL = "https://sofia-city-quiet-retreat.com";
 export const OWNER_EMAIL = "stefan.aleksandrov.mail@gmail.com";
 export const FROM_EMAIL = "onboarding@resend.dev"; // Resend: use this for testing; for production use an address on your verified domain
-
-/** Gallery: image paths are relative to the public directory. */
-export type GalleryRoomId =
-  | "living-room"
-  | "bedroom-1"
-  | "bedroom-2"
-  | "bedroom-3"
-  | "bathroom-1"
-  | "bathroom-2"
-  | "terrace-and-shared-spaces"
-  | "building";
 
 export const GALLERY_ROOM_LABELS: Record<
   GalleryRoomId,
@@ -38,7 +35,7 @@ export const GALLERY_ROOM_LABELS: Record<
   building: { title: "Building", titleBg: "Сграда" },
 };
 
-export const GALLERY_IMAGES = [
+export const GALLERY_IMAGES: GalleryImage[] = [
   { src: "/images/living%20room%20(0).jpg", alt: "Living room", altBg: "Всекидневна", room: "living-room" },
   { src: "/images/bedroom%201%20(1).JPEG", alt: "Bedroom 1", altBg: "Спалня 1", room: "bedroom-1" },
   { src: "/images/bathroom%201%20(1).JPEG", alt: "Bathroom 1", altBg: "Баня 1", room: "bathroom-1" },
@@ -78,11 +75,13 @@ export const GALLERY_IMAGES = [
   { src: "/images/parking%20spot.jpg", alt: "Parking spot", altBg: "Паркомясто", room: "building" },
 ];
 
-export const GALLERY_ROOMS = Object.entries(GALLERY_ROOM_LABELS)
-  .map(([room, labels]) => ({
-    id: room,
-    ...labels,
-    images: GALLERY_IMAGES.filter((image) => image.room === room),
+export const GALLERY_ROOMS: GalleryRoom[] = (Object.keys(
+  GALLERY_ROOM_LABELS,
+) as GalleryRoomId[])
+  .map((id) => ({
+    id,
+    ...GALLERY_ROOM_LABELS[id],
+    images: GALLERY_IMAGES.filter((image) => image.room === id),
   }))
   .filter((room) => room.images.length > 0);
 

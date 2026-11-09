@@ -1,7 +1,7 @@
 "use client";
 
 import Image, { type ImageProps } from "next/image";
-import { useLanguage } from "@/app/assets/components/language-provider";
+import { useLanguage } from "@/app/assets/hooks/useLanguage";
 
 export default function LocalizedImage({
   alt,

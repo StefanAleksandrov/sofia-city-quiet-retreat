@@ -1,6 +1,4 @@
-import type { BookedDateRange } from "@/app/assets/lib/icalendar";
-
-type AvailabilityResponse = { bookedDateRanges: BookedDateRange[] };
+import type { AvailabilityResponse } from "../configs/types/appTypes";
 
 /** Booked ranges include check-in and exclude check-out. */
 export function isDateInBookedRanges(

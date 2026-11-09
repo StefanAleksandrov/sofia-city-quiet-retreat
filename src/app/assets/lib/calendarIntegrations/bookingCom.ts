@@ -1,6 +1,5 @@
+import { BOOKING_COM_CACHE_TAG } from "../../configs/constants/bookingConfig";
 import { loadCalendar } from "./shared";
-
-export const BOOKING_COM_CACHE_TAG = "calendar-booking-com";
 
 export function getBookingComBookedDateRanges(forceRefresh = false) {
   const feedUrl = process.env.BOOKING_ICAL_URL;

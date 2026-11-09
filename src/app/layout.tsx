@@ -3,8 +3,8 @@ import AccommodationJsonLd from "@/app/assets/components/accommodation-json-ld";
 import Header from "@/app/assets/components/header";
 import Footer from "@/app/assets/components/footer";
 import { LanguageProvider } from "@/app/assets/components/language-provider";
-import { SITE_NAME } from "@/app/assets/configs/constants/siteConfig";
-import { rootMetadata, SITE_DESCRIPTION } from "@/app/assets/configs/metadata";
+import { SITE_DESCRIPTION } from "@/app/assets/configs/constants/siteConfig";
+import { rootMetadata } from "@/app/assets/configs/metadata";
 import { getInitialLanguage } from "@/app/assets/lib/getInitialLanguage";
 import "./globals.css";
 

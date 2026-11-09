@@ -1,4 +1,4 @@
-export type BookedDateRange = { checkIn: string; checkOut: string };
+import type { BookedDateRange } from "../configs/types/appTypes";
 
 function parseCalendarDate(lines: string[], property: "DTSTART" | "DTEND"): string {
   const line = lines.find((entry) => {

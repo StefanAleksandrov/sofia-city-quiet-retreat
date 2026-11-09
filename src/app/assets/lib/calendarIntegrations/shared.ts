@@ -1,7 +1,5 @@
-import {
-  parseICalendar,
-  type BookedDateRange,
-} from "@/app/assets/lib/icalendar";
+import { parseICalendar } from "@/app/assets/lib/icalendar";
+import type { BookedDateRange } from "../../configs/types/appTypes";
 
 export class CalendarSyncError extends Error {
   constructor(
