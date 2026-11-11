@@ -104,12 +104,21 @@ export default function BookingForm() {
     today.getMonth(),
     Math.min(today.getDate(), lastBookableDayOfMonth)
   );
+  const normalizeDate = (date: Date) => {
+    const day = new Date(date);
+    day.setHours(0, 0, 0, 0);
+    return day;
+  };
+  const isPastDate = (date: Date) => normalizeDate(date) < today;
+  const isFutureUnavailable = (date: Date) =>
+    !isPastDate(date) &&
+    (normalizeDate(date) > lastBookableDay ||
+      (availabilityStatus === "ready" &&
+        isDateInBookedRanges(date, bookedDateRanges)));
   const disabledDays = (date: Date) => {
-    const d = new Date(date);
-    d.setHours(0, 0, 0, 0);
     return (
-      d < today ||
-      d > lastBookableDay ||
+      isPastDate(date) ||
+      normalizeDate(date) > lastBookableDay ||
       availabilityStatus !== "ready" ||
       isDateInBookedRanges(date, bookedDateRanges)
     );
@@ -200,8 +209,8 @@ export default function BookingForm() {
             : availabilityStatus === "error"
               ? translateBookingError(availabilityError, translate)
               : translate(
-                  "Grey dates are booked or closed. Select your check-in and check-out within the next 12 months.",
-                  "Оцветените в сиво дати са заети или затворени. Изберете настаняване и напускане в рамките на следващите 12 месеца."
+                  "Past and unavailable dates are dimmed. Future unavailable dates have a light gray background, and today has a darker gray border. Select your check-in and check-out within the next 12 months.",
+                  "Миналите и недостъпните дати са приглушени. Бъдещите недостъпни дати са със светлосив фон, а днешната дата е с по-тъмна сива рамка. Изберете настаняване и напускане в рамките на следващите 12 месеца."
                 )}
         </p>
         <div className="mt-2 flex justify-center rounded-lg border border-[var(--border)] bg-[var(--surface)] p-4">
@@ -211,6 +220,12 @@ export default function BookingForm() {
             selected={selectedRange}
             onSelect={handleRangeSelect}
             disabled={disabledDays}
+            modifiers={{
+              futureUnavailable: isFutureUnavailable,
+            }}
+            modifiersClassNames={{
+              futureUnavailable: "booking-calendar-future-unavailable",
+            }}
             excludeDisabled
             numberOfMonths={numberOfMonths}
             defaultMonth={new Date()}
@@ -249,13 +264,14 @@ export default function BookingForm() {
               month_caption: "flex justify-center items-center h-8 font-medium",
               weekdays: "flex gap-1",
               weekday: "w-8 text-center text-xs text-[var(--muted)]",
+              weeks: "rdp-weeks gap-1",
               week: "flex gap-1",
               day: "w-8 h-8 rounded-md text-center text-sm",
-              day_button: "w-8 h-8 rounded-md hover:bg-[var(--primary-light)] focus:bg-[var(--accent)] focus:text-white",
+              day_button: "rdp-day_button w-8 h-8 rounded-md hover:bg-[var(--primary-light)] focus:bg-[var(--accent)] focus:text-white",
               selected:
                 "bg-[var(--accent)] text-white hover:bg-[var(--accent)] hover:text-white",
-              today: "font-semibold",
-              disabled: "opacity-40 cursor-not-allowed line-through",
+              today: "rdp-today font-semibold",
+              disabled: "rdp-disabled booking-calendar-disabled cursor-not-allowed",
               outside: "text-[var(--muted)] opacity-60",
               range_start: "rounded-s-md bg-[var(--accent)] text-white",
               range_end: "rounded-e-md bg-[var(--accent)] text-white",
