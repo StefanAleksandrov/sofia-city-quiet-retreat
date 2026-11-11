@@ -45,6 +45,7 @@ export default function BookingForm() {
   >("loading");
   const [availabilityError, setAvailabilityError] = useState("");
   const [numberOfMonths, setNumberOfMonths] = useState(1);
+  const [calendarReady, setCalendarReady] = useState(false);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -92,6 +93,7 @@ export default function BookingForm() {
     const updateMonthCount = () => setNumberOfMonths(desktopQuery.matches ? 2 : 1);
 
     updateMonthCount();
+    setCalendarReady(true);
     desktopQuery.addEventListener("change", updateMonthCount);
     return () => desktopQuery.removeEventListener("change", updateMonthCount);
   }, []);
@@ -214,70 +216,75 @@ export default function BookingForm() {
                 )}
         </p>
         <div className="mt-2 flex justify-center rounded-lg border border-[var(--border)] bg-[var(--surface)] p-4">
-          <DayPicker
-            mode="range"
-            weekStartsOn={1}
-            selected={selectedRange}
-            onSelect={handleRangeSelect}
-            disabled={disabledDays}
-            modifiers={{
-              futureUnavailable: isFutureUnavailable,
-            }}
-            modifiersClassNames={{
-              futureUnavailable: "booking-calendar-future-unavailable",
-            }}
-            excludeDisabled
-            numberOfMonths={numberOfMonths}
-            defaultMonth={new Date()}
-            startMonth={new Date()}
-            endMonth={new Date(lastBookableDay.getFullYear(), lastBookableDay.getMonth())}
-            lang={language === "bg" ? "bg-BG" : "en-GB"}
-            formatters={{
-              formatCaption: (month) =>
-                new Intl.DateTimeFormat(language === "bg" ? "bg-BG" : "en-GB", {
-                  month: "long",
-                  year: "numeric",
-                }).format(month),
-              formatWeekdayName: (date) =>
-                new Intl.DateTimeFormat(language === "bg" ? "bg-BG" : "en-GB", {
-                  weekday: "short",
-                }).format(date),
-            }}
-            labels={{
-              labelNav: () =>
-                translate("Month navigation", "Навигация по месеци"),
-              labelNext: () => translate("Next month", "Следващ месец"),
-              labelPrevious: () => translate("Previous month", "Предишен месец"),
-              labelWeekday: (date) =>
-                new Intl.DateTimeFormat(language === "bg" ? "bg-BG" : "en-GB", {
-                  weekday: "long",
-                }).format(date),
-              labelDayButton: (date) =>
-                new Intl.DateTimeFormat(language === "bg" ? "bg-BG" : "en-GB", {
-                  dateStyle: "full",
-                }).format(date),
-            }}
-            className="booking-calendar rdp-root w-full max-w-none border-0 p-0"
-            classNames={{
-              months: "flex flex-wrap gap-4 justify-center",
-              month: "flex flex-col gap-2",
-              month_caption: "flex justify-center items-center h-8 font-medium",
-              weekdays: "flex gap-1",
-              weekday: "w-8 text-center text-xs text-[var(--muted)]",
-              weeks: "rdp-weeks gap-1",
-              week: "flex gap-1",
-              day: "w-8 h-8 rounded-md text-center text-sm",
-              day_button: "rdp-day_button w-8 h-8 rounded-md hover:bg-[var(--primary-light)] focus:bg-[var(--accent)] focus:text-white",
-              selected:
-                "bg-[var(--accent)] text-white hover:bg-[var(--accent)] hover:text-white",
-              today: "rdp-today font-semibold",
-              disabled: "rdp-disabled booking-calendar-disabled cursor-not-allowed",
-              outside: "text-[var(--muted)] opacity-60",
-              range_start: "rounded-s-md bg-[var(--accent)] text-white",
-              range_end: "rounded-e-md bg-[var(--accent)] text-white",
-              range_middle: "rounded-none bg-[var(--primary-light)]",
-            }}
-          />
+          {calendarReady ? (
+            <DayPicker
+              mode="range"
+              weekStartsOn={1}
+              today={today}
+              selected={selectedRange}
+              onSelect={handleRangeSelect}
+              disabled={disabledDays}
+              modifiers={{
+                futureUnavailable: isFutureUnavailable,
+              }}
+              modifiersClassNames={{
+                futureUnavailable: "booking-calendar-future-unavailable",
+              }}
+              excludeDisabled
+              numberOfMonths={numberOfMonths}
+              defaultMonth={new Date()}
+              startMonth={new Date()}
+              endMonth={new Date(lastBookableDay.getFullYear(), lastBookableDay.getMonth())}
+              lang={language === "bg" ? "bg-BG" : "en-GB"}
+              formatters={{
+                formatCaption: (month) =>
+                  new Intl.DateTimeFormat(language === "bg" ? "bg-BG" : "en-GB", {
+                    month: "long",
+                    year: "numeric",
+                  }).format(month),
+                formatWeekdayName: (date) =>
+                  new Intl.DateTimeFormat(language === "bg" ? "bg-BG" : "en-GB", {
+                    weekday: "short",
+                  }).format(date),
+              }}
+              labels={{
+                labelNav: () =>
+                  translate("Month navigation", "Навигация по месеци"),
+                labelNext: () => translate("Next month", "Следващ месец"),
+                labelPrevious: () => translate("Previous month", "Предишен месец"),
+                labelWeekday: (date) =>
+                  new Intl.DateTimeFormat(language === "bg" ? "bg-BG" : "en-GB", {
+                    weekday: "long",
+                  }).format(date),
+                labelDayButton: (date) =>
+                  new Intl.DateTimeFormat(language === "bg" ? "bg-BG" : "en-GB", {
+                    dateStyle: "full",
+                  }).format(date),
+              }}
+              className="booking-calendar rdp-root w-full max-w-none border-0 p-0"
+              classNames={{
+                months: "flex flex-wrap gap-4 justify-center",
+                month: "flex flex-col gap-2",
+                month_caption: "flex justify-center items-center h-8 font-medium",
+                weekdays: "flex gap-1",
+                weekday: "w-8 text-center text-xs text-[var(--muted)]",
+                weeks: "rdp-weeks gap-1",
+                week: "flex gap-1",
+                day: "w-8 h-8 rounded-md text-center text-sm",
+                day_button: "rdp-day_button w-8 h-8 rounded-md hover:bg-[var(--primary-light)] focus:bg-[var(--accent)] focus:text-white",
+                selected:
+                  "bg-[var(--accent)] text-white hover:bg-[var(--accent)] hover:text-white",
+                today: "rdp-today font-semibold",
+                disabled: "rdp-disabled booking-calendar-disabled cursor-not-allowed",
+                outside: "text-[var(--muted)] opacity-60",
+                range_start: "rounded-s-md bg-[var(--accent)] text-white",
+                range_end: "rounded-e-md bg-[var(--accent)] text-white",
+                range_middle: "rounded-none bg-[var(--primary-light)]",
+              }}
+            />
+          ) : (
+            <div className="min-h-[17rem] w-full" aria-hidden="true" />
+          )}
         </div>
         {(form.checkIn || form.checkOut) && (
           <p className="mt-2 text-sm text-[var(--muted)]">
