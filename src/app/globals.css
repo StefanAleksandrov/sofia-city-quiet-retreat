@@ -199,6 +199,26 @@ body {
   min-height: 12rem;
 }
 
+.booking-calendar .rdp-day_button {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.375rem;
+}
+
+.booking-calendar .booking-calendar-disabled button:disabled {
+  color: #9ca3af;
+  cursor: not-allowed;
+}
+
+.booking-calendar .booking-calendar-future-unavailable:not([data-selected="true"]) .rdp-day_button {
+  background-color: #e5e7eb;
+  color: #9ca3af;
+}
+
+.booking-calendar .rdp-today:not([data-selected="true"]) .rdp-day_button {
+  border: 2px solid #6b7280;
+}
+
 .booking-calendar .rdp-button_previous,
 .booking-calendar .rdp-button_next {
   width: 3rem;
