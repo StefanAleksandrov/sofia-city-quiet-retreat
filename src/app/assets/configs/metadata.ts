@@ -39,6 +39,7 @@ export const rootMetadata: Metadata = {
   },
   robots: "index, follow",
   alternates: { canonical: SITE_URL },
+  verification: { google: "p-ZudSrMsMC4M6KdEBjetR5m3nmVzfYyZYkGkiUqamg" },
 };
 
 export const amenitiesMetadata: Metadata = {
