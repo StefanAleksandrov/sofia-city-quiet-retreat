@@ -3,7 +3,12 @@
 import { Resend } from "resend";
 import { getCountries, getCountryCallingCode } from "libphonenumber-js";
 import type { BookingFormData } from "@/app/assets/configs/types/appTypes";
-import { OWNER_EMAIL, FROM_EMAIL, SITE_NAME } from "@/app/assets/configs/constants/siteConfig";
+import {
+  FROM_EMAIL,
+  OWNER_EMAIL,
+  PARTNER_EMAILS,
+  SITE_NAME,
+} from "@/app/assets/configs/constants/siteConfig";
 import { calculateReservationPrice, formatEuro } from "@/app/assets/lib/reservationPricing";
 import {
   EARLY_CHECK_IN_FEE,
@@ -77,7 +82,6 @@ export async function sendBookingEmail(data: BookingFormData): Promise<{ ok: boo
       ? [`Late check-out: +${formatEuro(LATE_CHECK_OUT_FEE)}`]
       : []),
     `Estimated total: ${formatEuro(priceEstimate.total)}`,
-    "Informational estimate; confirm final price with the host.",
     `Name: ${data.name}`,
     `Email: ${data.email}`,
     `Phone: ${data.phone.trim() ? `+${getCountryCallingCode(data.phoneCountry)} ${data.phone.trim()}` : "(not provided)"}`,
@@ -89,6 +93,7 @@ export async function sendBookingEmail(data: BookingFormData): Promise<{ ok: boo
   const { error } = await resend.emails.send({
     from: FROM_EMAIL,
     to: OWNER_EMAIL,
+    ...(PARTNER_EMAILS.length > 0 ? { cc: PARTNER_EMAILS } : {}),
     subject: `BOOKING ${data.checkIn}-${data.checkOut}, ${data.adults + data.children} guests (+ ${data.babies} ${data.babies === 1 ? "baby" : "babies"}), (${data.name})`,
     text,
   });
