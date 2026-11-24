@@ -14,7 +14,6 @@ export const SITE_DESCRIPTION =
 export const SITE_URL = "https://sofia-city-quiet-retreat.com";
 export const OWNER_EMAIL = "stefan.aleksandrov.mail@gmail.com";
 export const PARTNER_EMAILS: string[] = ['tsef7n@abv.bg', 'tsef7n2@abv.bg'];
-export const FROM_EMAIL = "onboarding@resend.dev"; // Resend: use this for testing; for production use an address on your verified domain
 
 export const GALLERY_ROOM_LABELS: Record<
   GalleryRoomId,

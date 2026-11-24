@@ -53,7 +53,7 @@ export function translateBookingError(
     "Booking.com calendar URL must use a supported Booking.com HTTPS address.": "Адресът на календара трябва да е поддържан HTTPS адрес на Booking.com.",
     "Booking.com calendar response is unexpectedly large.": "Отговорът от календара на Booking.com е неочаквано голям.",
     "Booking.com calendar could not be retrieved or contains invalid calendar data.": "Календарът на Booking.com не можа да бъде извлечен или съдържа невалидни данни.",
-    "Email is not configured. Please set RESEND_API_KEY.": "Имейлът не е настроен. Моля, задайте RESEND_API_KEY.",
+    "Email is not configured. Please set GMAIL_CLIENT_ID, GMAIL_CLIENT_SECRET, and GMAIL_REFRESH_TOKEN.": "Имейлът не е настроен. Моля, конфигурирайте Gmail OAuth.",
     "Booking dates must use YYYY-MM-DD format.": "Датите за резервация трябва да са във формат YYYY-MM-DD.",
     "Booking dates must be valid calendar dates.": "Датите за резервация трябва да са валидни календарни дати.",
     "Check-out must be after check-in.": "Датата на напускане трябва да е след датата на настаняване.",

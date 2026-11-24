@@ -1,10 +1,9 @@
 "use server";
 
-import { Resend } from "resend";
+import { OAuth2Client } from "google-auth-library";
 import { getCountries, getCountryCallingCode } from "libphonenumber-js";
 import type { BookingFormData } from "@/app/assets/configs/types/appTypes";
 import {
-  FROM_EMAIL,
   OWNER_EMAIL,
   PARTNER_EMAILS,
   SITE_NAME,
@@ -28,9 +27,15 @@ export async function sendBookingEmail(data: BookingFormData): Promise<{ ok: boo
   if (!getCountries().includes(data.phoneCountry)) {
     return { ok: false, error: "Phone country selection is invalid." };
   }
-  const apiKey = process.env.RESEND_API_KEY;
-  if (!apiKey) {
-    return { ok: false, error: "Email is not configured. Please set RESEND_API_KEY." };
+  const clientId = process.env.GMAIL_CLIENT_ID;
+  const clientSecret = process.env.GMAIL_CLIENT_SECRET;
+  const refreshToken = process.env.GMAIL_REFRESH_TOKEN;
+  if (!clientId || !clientSecret || !refreshToken) {
+    return {
+      ok: false,
+      error:
+        "Email is not configured. Please set GMAIL_CLIENT_ID, GMAIL_CLIENT_SECRET, and GMAIL_REFRESH_TOKEN.",
+    };
   }
   if (
     typeof data.earlyCheckIn !== "boolean" ||
@@ -52,7 +57,6 @@ export async function sendBookingEmail(data: BookingFormData): Promise<{ ok: boo
     };
   }
 
-  const resend = new Resend(apiKey);
   const text = [
     `New booking inquiry from ${SITE_NAME}`,
     "",
@@ -90,14 +94,104 @@ export async function sendBookingEmail(data: BookingFormData): Promise<{ ok: boo
     data.message || "(none)",
   ].join("\n");
 
-  const { error } = await resend.emails.send({
-    from: FROM_EMAIL,
-    to: OWNER_EMAIL,
-    ...(PARTNER_EMAILS.length > 0 ? { cc: PARTNER_EMAILS } : {}),
-    subject: `BOOKING ${data.checkIn}-${data.checkOut}, ${data.adults + data.children} guests (+ ${data.babies} ${data.babies === 1 ? "baby" : "babies"}), (${data.name})`,
-    text,
-  });
+  const subject = `BOOKING ${data.checkIn}-${data.checkOut}, ${data.adults + data.children} guests (+ ${data.babies} ${data.babies === 1 ? "baby" : "babies"}), (${data.name})`;
+  const oauth2Client = new OAuth2Client(clientId, clientSecret);
+  oauth2Client.setCredentials({ refresh_token: refreshToken });
+  const encodedSubject = `=?UTF-8?B?${Buffer.from(subject, "utf8").toString("base64")}?=`;
+  const encodedText = Buffer.from(text, "utf8")
+    .toString("base64")
+    .match(/.{1,76}/g)
+    ?.join("\r\n");
+  const rawMessage = [
+    `From: ${OWNER_EMAIL}`,
+    `To: ${OWNER_EMAIL}`,
+    ...(PARTNER_EMAILS.length > 0
+      ? [`Cc: ${PARTNER_EMAILS.join(", ")}`]
+      : []),
+    `Subject: ${encodedSubject}`,
+    "MIME-Version: 1.0",
+    'Content-Type: text/plain; charset="UTF-8"',
+    "Content-Transfer-Encoding: base64",
+    "",
+    encodedText ?? "",
+  ].join("\r\n");
 
-  if (error) return { ok: false, error: error.message };
-  return { ok: true };
+  try {
+    const { token } = await oauth2Client.getAccessToken();
+    if (!token) {
+      return { ok: false, error: "Gmail did not provide an access token." };
+    }
+
+    const response = await fetch(
+      "https://gmail.googleapis.com/gmail/v1/users/me/messages/send",
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          raw: Buffer.from(rawMessage, "utf8").toString("base64url"),
+        }),
+      },
+    );
+    const responseText = await response.text();
+    let responseBody: unknown;
+    if (responseText) {
+      try {
+        responseBody = JSON.parse(responseText);
+      } catch {
+        return {
+          ok: false,
+          error: `Gmail returned an invalid response (HTTP ${response.status}).`,
+        };
+      }
+    }
+
+    if (!response.ok) {
+      return {
+        ok: false,
+        error:
+          getGmailApiError(responseBody) ??
+          `Gmail API request failed (HTTP ${response.status}).`,
+      };
+    }
+    if (!hasGmailMessageId(responseBody)) {
+      return { ok: false, error: "Gmail did not confirm the email was sent." };
+    }
+    return { ok: true };
+  } catch (error) {
+    return {
+      ok: false,
+      error:
+        error instanceof Error
+          ? error.message
+          : "The booking email could not be sent through Gmail.",
+    };
+  }
+}
+
+function getGmailApiError(value: unknown): string | undefined {
+  if (typeof value !== "object" || value === null || !("error" in value)) {
+    return undefined;
+  }
+  const apiError = value.error;
+  if (
+    typeof apiError === "object" &&
+    apiError !== null &&
+    "message" in apiError &&
+    typeof apiError.message === "string"
+  ) {
+    return apiError.message;
+  }
+  return undefined;
+}
+
+function hasGmailMessageId(value: unknown): value is { id: string } {
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    "id" in value &&
+    typeof value.id === "string"
+  );
 }
