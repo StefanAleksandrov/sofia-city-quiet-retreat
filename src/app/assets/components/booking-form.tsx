@@ -17,6 +17,7 @@ import "react-day-picker/style.css";
 import {
   EARLY_CHECK_IN_FEE,
   LATE_CHECK_OUT_FEE,
+  MAX_COUNTED_GUESTS,
   WEEKDAY_RATE,
   WEEKEND_RATE,
 } from "../configs/constants/bookingConfig";
@@ -26,7 +27,9 @@ const initial: BookingFormData = {
   checkOut: "",
   earlyCheckIn: false,
   lateCheckOut: false,
-  guests: 1,
+  adults: 1,
+  children: 0,
+  babies: 0,
   name: "",
   email: "",
   phone: "",
@@ -46,6 +49,44 @@ export default function BookingForm() {
   const [availabilityError, setAvailabilityError] = useState("");
   const [numberOfMonths, setNumberOfMonths] = useState(1);
   const [calendarReady, setCalendarReady] = useState(false);
+  const guestCategories = [
+    {
+      key: "adults",
+      label: translate("Adults", "Възрастни"),
+      age: translate("Ages 13+", "Възраст: 13+"),
+      decreaseLabel: translate("Decrease adults", "Намаляване на възрастните"),
+      increaseLabel: translate("Increase adults", "Увеличаване на възрастните"),
+    },
+    {
+      key: "children",
+      label: translate("Children", "Деца"),
+      age: translate("Ages 2-12", "Възраст: 2-12"),
+      decreaseLabel: translate("Decrease children", "Намаляване на децата"),
+      increaseLabel: translate("Increase children", "Увеличаване на децата"),
+    },
+    {
+      key: "babies",
+      label: translate("Babies", "Бебета"),
+      age: translate("Under 2", "Под 2 години"),
+      decreaseLabel: translate("Decrease babies", "Намаляване на бебетата"),
+      increaseLabel: translate("Increase babies", "Увеличаване на бебетата"),
+    },
+  ] as const;
+
+  function changeGuestCount(category: "adults" | "children" | "babies", amount: number) {
+    setForm((current) => {
+      const nextCount = current[category] + amount;
+      const minimum = category === "adults" ? 1 : 0;
+      if (nextCount < minimum || !Number.isSafeInteger(nextCount)) return current;
+      if (
+        category !== "babies" &&
+        current.adults + current.children + amount > MAX_COUNTED_GUESTS
+      ) {
+        return current;
+      }
+      return { ...current, [category]: nextCount };
+    });
+  }
 
   useEffect(() => {
     const controller = new AbortController();
@@ -407,23 +448,58 @@ export default function BookingForm() {
         )}
       </div>
 
-      <label className="block">
-        <span className="block text-sm font-medium text-[var(--foreground)]">
+      <fieldset className="space-y-3">
+        <legend className="text-sm font-medium text-[var(--foreground)]">
           <Text bg="Гости">Guests</Text>
-        </span>
-        <select
-          required
-          value={form.guests}
-          onChange={(e) => setForm((f) => ({ ...f, guests: Number(e.target.value) }))}
-          className="mt-1 w-full rounded-lg border border-[var(--border)] px-3 py-2 focus:border-[var(--accent)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)]"
-        >
-          {[1, 2, 3, 4, 5, 6, 7].map((n) => (
-            <option key={n} value={n}>
-              {n} {language === "bg" ? (n === 1 ? "гост" : "гости") : (n === 1 ? "guest" : "guests")}
-            </option>
-          ))}
-        </select>
-      </label>
+        </legend>
+        {guestCategories.map(({ key, label, age, decreaseLabel, increaseLabel }) => {
+          const value = form[key];
+          const atMinimum = key === "adults" ? value <= 1 : value <= 0;
+          const atMaximum =
+            key === "babies"
+              ? value >= Number.MAX_SAFE_INTEGER
+              : form.adults + form.children >= MAX_COUNTED_GUESTS;
+          return (
+            <div
+              key={key}
+              className="flex items-center justify-between gap-4 rounded-lg border border-[var(--border)] p-3"
+            >
+              <div>
+                <p className="text-sm font-medium text-[var(--foreground)]">{label}</p>
+                <p className="text-xs text-[var(--muted)]">{age}</p>
+              </div>
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  aria-label={decreaseLabel}
+                  disabled={atMinimum}
+                  onClick={() => changeGuestCount(key, -1)}
+                  className="size-8 rounded-full border border-[var(--border)] text-lg leading-none disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  −
+                </button>
+                <output className="min-w-5 text-center" aria-label={`${label}: ${value}`}>
+                  {value}
+                </output>
+                <button
+                  type="button"
+                  aria-label={increaseLabel}
+                  disabled={atMaximum}
+                  onClick={() => changeGuestCount(key, 1)}
+                  className="size-8 rounded-full border border-[var(--border)] text-lg leading-none disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  +
+                </button>
+              </div>
+            </div>
+          );
+        })}
+        <p className="text-xs text-[var(--muted)]">
+          <Text bg="Възрастните и децата са общо до 7. Бебетата не се включват в лимита.">
+            Adults and children are limited to 7 combined. Babies don&apos;t count toward this limit.
+          </Text>
+        </p>
+      </fieldset>
 
       <fieldset className="space-y-3">
         <legend className="text-sm font-medium text-[var(--foreground)]">

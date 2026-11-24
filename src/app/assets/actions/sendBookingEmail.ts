@@ -10,8 +10,15 @@ import {
   WEEKDAY_RATE,
   WEEKEND_RATE,
 } from "../configs/constants/bookingConfig";
+import { areGuestCountsValid } from "../lib/guestCounts";
 
 export async function sendBookingEmail(data: BookingFormData): Promise<{ ok: boolean; error?: string }> {
+  if (
+    !data ||
+    !areGuestCountsValid(data.adults, data.children, data.babies)
+  ) {
+    return { ok: false, error: "Guest counts are invalid." };
+  }
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) {
     return { ok: false, error: "Email is not configured. Please set RESEND_API_KEY." };
@@ -42,7 +49,7 @@ export async function sendBookingEmail(data: BookingFormData): Promise<{ ok: boo
     "",
     `Check-in: ${data.checkIn}`,
     `Check-out: ${data.checkOut}`,
-    `Guests: ${data.guests}`,
+    `Guests: ${data.adults} adult${data.adults === 1 ? "" : "s"}, ${data.children} ${data.children === 1 ? "child" : "children"}, ${data.babies} ${data.babies === 1 ? "baby" : "babies"}`,
     "",
     "Estimated price breakdown:",
     ...(priceEstimate.weekdayNights > 0
@@ -78,7 +85,7 @@ export async function sendBookingEmail(data: BookingFormData): Promise<{ ok: boo
   const { error } = await resend.emails.send({
     from: FROM_EMAIL,
     to: OWNER_EMAIL,
-    subject: `BOOKING ${data.checkIn}-${data.checkOut}, ${data.guests} guests, (${data.name})`,
+    subject: `BOOKING ${data.checkIn}-${data.checkOut}, ${data.adults + data.children} guests (+ ${data.babies} ${data.babies === 1 ? "baby" : "babies"}), (${data.name})`,
     text,
   });
 

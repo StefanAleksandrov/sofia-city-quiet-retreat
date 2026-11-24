@@ -9,7 +9,9 @@ export interface BookingFormData {
   checkOut: string;
   earlyCheckIn: boolean;
   lateCheckOut: boolean;
-  guests: number;
+  adults: number;
+  children: number;
+  babies: number;
   name: string;
   email: string;
   phone: string;
