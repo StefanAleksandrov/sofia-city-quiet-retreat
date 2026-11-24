@@ -7,15 +7,17 @@
     "build": "next build",
     "start": "npm install && node scripts/start.mjs",
     "start-dist": "npm run build && next start",
+    "gmail:authorize": "node --env-file=.env scripts/gmail-authorize.mjs",
     "typecheck": "tsc --noEmit",
     "build-check": "npm run typecheck && npm run build"
   },
   "dependencies": {
+    "google-auth-library": "^11.3.4",
+    "libphonenumber-js": "^1.13.17",
     "next": "16.4.5",
     "react": "19.3.1",
     "react-day-picker": "^10.0.2",
-    "react-dom": "19.3.1",
-    "resend": "^6.37.0"
+    "react-dom": "19.3.1"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { DayPicker } from "react-day-picker";
+import { getCountries, getCountryCallingCode, type CountryCode } from "libphonenumber-js";
 import { sendBookingEmail } from "@/app/assets/actions/sendBookingEmail";
 import { useLanguage } from "@/app/assets/hooks/useLanguage";
 import Text from "@/app/assets/components/text";
@@ -17,6 +18,7 @@ import "react-day-picker/style.css";
 import {
   EARLY_CHECK_IN_FEE,
   LATE_CHECK_OUT_FEE,
+  MAX_COUNTED_GUESTS,
   WEEKDAY_RATE,
   WEEKEND_RATE,
 } from "../configs/constants/bookingConfig";
@@ -26,16 +28,26 @@ const initial: BookingFormData = {
   checkOut: "",
   earlyCheckIn: false,
   lateCheckOut: false,
-  guests: 1,
+  adults: 1,
+  children: 0,
+  babies: 0,
   name: "",
   email: "",
   phone: "",
+  phoneCountry: "BG",
   message: "",
 };
 
-export default function BookingForm() {
+export default function BookingForm({
+  initialPhoneCountry,
+}: {
+  initialPhoneCountry: CountryCode | null;
+}) {
   const { language, translate } = useLanguage();
-  const [form, setForm] = useState<BookingFormData>(initial);
+  const [form, setForm] = useState<BookingFormData>(() => ({
+    ...initial,
+    phoneCountry: initialPhoneCountry ?? initial.phoneCountry,
+  }));
   const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState("");
   const [submittedEmail, setSubmittedEmail] = useState("");
@@ -46,6 +58,154 @@ export default function BookingForm() {
   const [availabilityError, setAvailabilityError] = useState("");
   const [numberOfMonths, setNumberOfMonths] = useState(1);
   const [calendarReady, setCalendarReady] = useState(false);
+  const [guestPickerOpen, setGuestPickerOpen] = useState(false);
+  const guestPickerRef = useRef<HTMLDivElement>(null);
+  const guestPickerButtonRef = useRef<HTMLButtonElement>(null);
+  const [phoneCountryPickerOpen, setPhoneCountryPickerOpen] = useState(false);
+  const [phoneCountrySearch, setPhoneCountrySearch] = useState("");
+  const phoneCountryPickerRef = useRef<HTMLDivElement>(null);
+  const phoneCountryPickerButtonRef = useRef<HTMLButtonElement>(null);
+  const phoneCountrySearchRef = useRef<HTMLInputElement>(null);
+  const guestCategories = [
+    {
+      key: "adults",
+      label: translate("Adults", "Възрастни"),
+      age: translate("Ages 13+", "Възраст: 13+"),
+      decreaseLabel: translate("Decrease adults", "Намаляване на възрастните"),
+      increaseLabel: translate("Increase adults", "Увеличаване на възрастните"),
+    },
+    {
+      key: "children",
+      label: translate("Children", "Деца"),
+      age: translate("Ages 2-12", "Възраст: 2-12"),
+      decreaseLabel: translate("Decrease children", "Намаляване на децата"),
+      increaseLabel: translate("Increase children", "Увеличаване на децата"),
+    },
+    {
+      key: "babies",
+      label: translate("Babies", "Бебета"),
+      age: translate("Under 2", "Под 2 години"),
+      decreaseLabel: translate("Decrease babies", "Намаляване на бебетата"),
+      increaseLabel: translate("Increase babies", "Увеличаване на бебетата"),
+    },
+  ] as const;
+  const guestSummary = [
+    `${form.adults} ${translate(
+      form.adults === 1 ? "adult" : "adults",
+      form.adults === 1 ? "възрастен" : "възрастни"
+    )}`,
+    ...(form.children > 0
+      ? [
+          `${form.children} ${translate(
+            form.children === 1 ? "child" : "children",
+            form.children === 1 ? "дете" : "деца"
+          )}`,
+        ]
+      : []),
+    ...(form.babies > 0
+      ? [
+          `${form.babies} ${translate(
+            form.babies === 1 ? "baby" : "babies",
+            form.babies === 1 ? "бебе" : "бебета"
+          )}`,
+        ]
+      : []),
+  ].join(", ");
+  const locale = language === "bg" ? "bg" : "en";
+  const displayCountryName = new Intl.DisplayNames([locale], { type: "region" });
+  const phoneCountryOptions = getCountries()
+    .map((country) => ({
+      country,
+      name: displayCountryName.of(country) ?? country,
+      callingCode: `+${getCountryCallingCode(country)}`,
+    }))
+    .sort((a, b) => a.name.localeCompare(b.name, locale));
+  const searchTerm = phoneCountrySearch.trim().toLocaleLowerCase(locale);
+  const filteredPhoneCountries = phoneCountryOptions.filter(
+    (option) =>
+      option.name.toLocaleLowerCase(locale).includes(searchTerm) ||
+      option.callingCode.includes(searchTerm)
+  );
+  const selectedPhoneCountry =
+    phoneCountryOptions.find((option) => option.country === form.phoneCountry) ??
+    phoneCountryOptions.find((option) => option.country === "BG")!;
+
+  function changeGuestCount(category: "adults" | "children" | "babies", amount: number) {
+    setForm((current) => {
+      const nextCount = current[category] + amount;
+      const minimum = category === "adults" ? 1 : 0;
+      if (nextCount < minimum || !Number.isSafeInteger(nextCount)) return current;
+      if (
+        category !== "babies" &&
+        current.adults + current.children + amount > MAX_COUNTED_GUESTS
+      ) {
+        return current;
+      }
+      return { ...current, [category]: nextCount };
+    });
+  }
+
+  function selectPhoneCountry(country: CountryCode) {
+    setForm((current) => ({ ...current, phoneCountry: country }));
+    setPhoneCountrySearch("");
+    setPhoneCountryPickerOpen(false);
+    phoneCountryPickerButtonRef.current?.focus();
+  }
+
+  useEffect(() => {
+    if (!guestPickerOpen) return;
+
+    function handlePointerDown(event: PointerEvent) {
+      if (
+        event.target instanceof Node &&
+        !guestPickerRef.current?.contains(event.target)
+      ) {
+        setGuestPickerOpen(false);
+      }
+    }
+
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setGuestPickerOpen(false);
+        guestPickerButtonRef.current?.focus();
+      }
+    }
+
+    document.addEventListener("pointerdown", handlePointerDown);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("pointerdown", handlePointerDown);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [guestPickerOpen]);
+
+  useEffect(() => {
+    if (!phoneCountryPickerOpen) return;
+    phoneCountrySearchRef.current?.focus();
+
+    function handlePointerDown(event: PointerEvent) {
+      if (
+        event.target instanceof Node &&
+        !phoneCountryPickerRef.current?.contains(event.target)
+      ) {
+        setPhoneCountryPickerOpen(false);
+      }
+    }
+
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setPhoneCountryPickerOpen(false);
+        phoneCountryPickerButtonRef.current?.focus();
+      }
+    }
+
+    document.addEventListener("pointerdown", handlePointerDown);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("pointerdown", handlePointerDown);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [phoneCountryPickerOpen]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -407,66 +567,155 @@ export default function BookingForm() {
         )}
       </div>
 
-      <label className="block">
-        <span className="block text-sm font-medium text-[var(--foreground)]">
+      <div className="space-y-2">
+        <p className="text-sm font-medium text-[var(--foreground)]">
           <Text bg="Гости">Guests</Text>
-        </span>
-        <select
-          required
-          value={form.guests}
-          onChange={(e) => setForm((f) => ({ ...f, guests: Number(e.target.value) }))}
-          className="mt-1 w-full rounded-lg border border-[var(--border)] px-3 py-2 focus:border-[var(--accent)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)]"
-        >
-          {[1, 2, 3, 4, 5, 6, 7].map((n) => (
-            <option key={n} value={n}>
-              {n} {language === "bg" ? (n === 1 ? "гост" : "гости") : (n === 1 ? "guest" : "guests")}
-            </option>
-          ))}
-        </select>
-      </label>
+        </p>
+        <div className="relative" ref={guestPickerRef}>
+          <button
+            ref={guestPickerButtonRef}
+            type="button"
+            aria-haspopup="dialog"
+            aria-expanded={guestPickerOpen}
+            aria-controls="guest-count-popover"
+            onClick={() => setGuestPickerOpen((open) => !open)}
+            className="flex w-full items-center justify-between rounded-lg border border-[var(--border)] px-3 py-2 text-left focus:border-[var(--accent)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)]"
+          >
+            <span className="flex items-center gap-3">
+              <svg
+                aria-hidden="true"
+                viewBox="0 0 24 24"
+                fill="none"
+                className="size-5 text-[var(--muted)]"
+              >
+                <path
+                  d="M20 21a8 8 0 0 0-16 0M12 13a5 5 0 1 0 0-10 5 5 0 0 0 0 10Z"
+                  stroke="currentColor"
+                  strokeWidth="1.7"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+              <span>{guestSummary}</span>
+            </span>
+            <svg
+              aria-hidden="true"
+              viewBox="0 0 20 20"
+              fill="none"
+              className={`size-4 text-[var(--muted)] transition-transform ${guestPickerOpen ? "rotate-180" : ""}`}
+            >
+              <path
+                d="m5 7.5 5 5 5-5"
+                stroke="currentColor"
+                strokeWidth="1.7"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </button>
+          {guestPickerOpen && (
+            <div
+              id="guest-count-popover"
+              role="dialog"
+              aria-label={translate("Select guests", "Изберете гости")}
+              className="absolute left-0 right-0 top-full z-30 mt-2 space-y-3 rounded-xl border border-[var(--border)] bg-white p-4 shadow-xl sm:left-auto sm:w-96"
+            >
+              {guestCategories.map(({ key, label, age, decreaseLabel, increaseLabel }) => {
+                const value = form[key];
+                const atMinimum = key === "adults" ? value <= 1 : value <= 0;
+                const atMaximum =
+                  key === "babies"
+                    ? value >= Number.MAX_SAFE_INTEGER
+                    : form.adults + form.children >= MAX_COUNTED_GUESTS;
+                return (
+                  <div
+                    key={key}
+                    className="flex items-center justify-between gap-4"
+                  >
+                    <div>
+                      <p className="text-sm font-medium text-[var(--foreground)]">{label}</p>
+                      <p className="text-xs text-[var(--muted)]">{age}</p>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <button
+                        type="button"
+                        aria-label={decreaseLabel}
+                        disabled={atMinimum}
+                        onClick={() => changeGuestCount(key, -1)}
+                        className="size-8 cursor-pointer rounded-full border border-[var(--border)] text-lg leading-none disabled:cursor-not-allowed disabled:opacity-40"
+                      >
+                        −
+                      </button>
+                      <output className="min-w-5 text-center" aria-label={`${label}: ${value}`}>
+                        {value}
+                      </output>
+                      <button
+                        type="button"
+                        aria-label={increaseLabel}
+                        disabled={atMaximum}
+                        onClick={() => changeGuestCount(key, 1)}
+                        className="size-8 cursor-pointer rounded-full border border-[var(--border)] text-lg leading-none disabled:cursor-not-allowed disabled:opacity-40"
+                      >
+                        +
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+              <p className="text-xs text-[var(--muted)]">
+                <Text bg="Възрастните и децата са общо до 7. Бебетата не се включват в лимита.">
+                  Adults and children are limited to 7 combined. Babies don&apos;t count toward this limit.
+                </Text>
+              </p>
+            </div>
+          )}
+        </div>
+      </div>
 
-      <fieldset className="space-y-3">
+      <fieldset>
         <legend className="text-sm font-medium text-[var(--foreground)]">
           <Text bg="Допълнителни опции">Optional extras</Text>
         </legend>
-        <label className="flex items-center justify-between gap-4 rounded-lg border border-[var(--border)] p-3">
-          <span className="flex items-center gap-3 text-sm">
-            <input
-              type="checkbox"
-              checked={form.earlyCheckIn}
-              onChange={(event) =>
-                setForm((current) => ({
-                  ...current,
-                  earlyCheckIn: event.target.checked,
-                }))
-              }
-              className="size-4 accent-[var(--accent)]"
-            />
-            <Text bg="Ранно настаняване">Early check-in</Text>
-          </span>
-          <span className="text-sm font-medium">
-            {formatEuro(EARLY_CHECK_IN_FEE, language === "bg" ? "bg-BG" : "en-IE")}
-          </span>
-        </label>
-        <label className="flex items-center justify-between gap-4 rounded-lg border border-[var(--border)] p-3">
-          <span className="flex items-center gap-3 text-sm">
-            <input
-              type="checkbox"
-              checked={form.lateCheckOut}
-              onChange={(event) =>
-                setForm((current) => ({
-                  ...current,
-                  lateCheckOut: event.target.checked,
-                }))
-              }
-              className="size-4 accent-[var(--accent)]"
-            />
-            <Text bg="Късно напускане">Late check-out</Text>
-          </span>
-          <span className="text-sm font-medium">
-            {formatEuro(LATE_CHECK_OUT_FEE, language === "bg" ? "bg-BG" : "en-IE")}
-          </span>
-        </label>
+        <div className="mt-3 grid gap-4 sm:grid-cols-2">
+          <label className="flex cursor-pointer items-center justify-between gap-4 rounded-lg border border-[var(--border)] p-3">
+            <span className="flex items-center gap-3 text-sm">
+              <input
+                type="checkbox"
+                checked={form.earlyCheckIn}
+                onChange={(event) =>
+                  setForm((current) => ({
+                    ...current,
+                    earlyCheckIn: event.target.checked,
+                  }))
+                }
+                className="size-4 cursor-pointer accent-[var(--accent)]"
+              />
+              <Text bg="Ранно настаняване">Early check-in</Text>
+            </span>
+            <span className="text-sm font-medium">
+              {formatEuro(EARLY_CHECK_IN_FEE, language === "bg" ? "bg-BG" : "en-IE")}
+            </span>
+          </label>
+          <label className="flex cursor-pointer items-center justify-between gap-4 rounded-lg border border-[var(--border)] p-3">
+            <span className="flex items-center gap-3 text-sm">
+              <input
+                type="checkbox"
+                checked={form.lateCheckOut}
+                onChange={(event) =>
+                  setForm((current) => ({
+                    ...current,
+                    lateCheckOut: event.target.checked,
+                  }))
+                }
+                className="size-4 cursor-pointer accent-[var(--accent)]"
+              />
+              <Text bg="Късно напускане">Late check-out</Text>
+            </span>
+            <span className="text-sm font-medium">
+              {formatEuro(LATE_CHECK_OUT_FEE, language === "bg" ? "bg-BG" : "en-IE")}
+            </span>
+          </label>
+        </div>
       </fieldset>
 
       <div className="grid gap-4 sm:grid-cols-2">
@@ -498,18 +747,97 @@ export default function BookingForm() {
         </label>
       </div>
 
-      <label className="block">
-        <span className="block text-sm font-medium text-[var(--foreground)]">
+      <div>
+        <span
+          id="phone-number-label"
+          className="block text-sm font-medium text-[var(--foreground)]"
+        >
           <Text bg="Телефон (по избор)">Phone (optional)</Text>
         </span>
-        <input
-          type="tel"
-          autoComplete="tel"
-          value={form.phone}
-          onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))}
-          className="mt-1 w-full rounded-lg border border-[var(--border)] px-3 py-2 focus:border-[var(--accent)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)]"
-        />
-      </label>
+        <div className="mt-1 grid grid-cols-[6rem_minmax(0,1fr)] gap-2 sm:grid-cols-[7rem_minmax(0,1fr)] sm:gap-3">
+          <div className="relative" ref={phoneCountryPickerRef}>
+            <button
+              ref={phoneCountryPickerButtonRef}
+              type="button"
+              aria-label={translate(
+                `Country calling code: ${selectedPhoneCountry.name} ${selectedPhoneCountry.callingCode}`,
+                `Международен код: ${selectedPhoneCountry.name} ${selectedPhoneCountry.callingCode}`
+              )}
+              aria-haspopup="dialog"
+              aria-expanded={phoneCountryPickerOpen}
+              aria-controls="phone-country-picker"
+              onClick={() => {
+                setGuestPickerOpen(false);
+                setPhoneCountryPickerOpen((open) => !open);
+              }}
+              className="flex w-full items-center justify-between rounded-lg border border-[var(--border)] px-2 py-2 text-sm focus:border-[var(--accent)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)]"
+            >
+              <span>{selectedPhoneCountry.callingCode}</span>
+              <svg
+                aria-hidden="true"
+                viewBox="0 0 20 20"
+                fill="none"
+                className={`size-4 text-[var(--muted)] transition-transform ${phoneCountryPickerOpen ? "rotate-180" : ""}`}
+              >
+                <path
+                  d="m5 7.5 5 5 5-5"
+                  stroke="currentColor"
+                  strokeWidth="1.7"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </button>
+            {phoneCountryPickerOpen && (
+              <div
+                id="phone-country-picker"
+                role="dialog"
+                aria-label={translate("Select a country", "Изберете държава")}
+                className="absolute left-0 top-full z-40 mt-2 w-72 max-w-[calc(100vw-3rem)] rounded-xl border border-[var(--border)] bg-white p-2 shadow-xl sm:w-80"
+              >
+                <input
+                  ref={phoneCountrySearchRef}
+                  type="search"
+                  aria-label={translate("Search country by name", "Търсене по име на държава")}
+                  autoComplete="off"
+                  value={phoneCountrySearch}
+                  onChange={(event) => setPhoneCountrySearch(event.target.value)}
+                  placeholder={translate("Search country", "Търсене на държава")}
+                  className="w-full rounded-lg border border-[var(--border)] px-3 py-2 text-sm focus:border-[var(--accent)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)]"
+                />
+                <div className="mt-2 max-h-64 overflow-y-auto">
+                  {filteredPhoneCountries.length > 0 ? (
+                    filteredPhoneCountries.map(({ country, name, callingCode }) => (
+                      <button
+                        key={country}
+                        type="button"
+                        aria-pressed={country === form.phoneCountry}
+                        onClick={() => selectPhoneCountry(country)}
+                        className="flex w-full items-center justify-between gap-3 rounded-md px-3 py-2 text-left text-sm hover:bg-[var(--surface)] focus:bg-[var(--surface)] focus:outline-none"
+                      >
+                        <span>{name}</span>
+                        <span className="text-[var(--muted)]">{callingCode}</span>
+                      </button>
+                    ))
+                  ) : (
+                    <p className="px-3 py-2 text-sm text-[var(--muted)]" role="status">
+                      <Text bg="Няма намерени държави">No countries found</Text>
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+          <input
+            type="tel"
+            aria-labelledby="phone-number-label"
+            autoComplete="tel-national"
+            value={form.phone}
+            onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))}
+            className="min-w-0 w-full rounded-lg border border-[var(--border)] px-3 py-2 focus:border-[var(--accent)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)]"
+          />
+        </div>
+      </div>
 
       <label className="block">
         <span className="block text-sm font-medium text-[var(--foreground)]">

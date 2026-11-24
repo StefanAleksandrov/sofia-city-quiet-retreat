@@ -1,3 +1,5 @@
+import type { CountryCode } from "libphonenumber-js";
+
 export interface NavigationItem {
   href: string;
   textContent: string;
@@ -9,10 +11,13 @@ export interface BookingFormData {
   checkOut: string;
   earlyCheckIn: boolean;
   lateCheckOut: boolean;
-  guests: number;
+  adults: number;
+  children: number;
+  babies: number;
   name: string;
   email: string;
   phone: string;
+  phoneCountry: CountryCode;
   message: string;
 }
 

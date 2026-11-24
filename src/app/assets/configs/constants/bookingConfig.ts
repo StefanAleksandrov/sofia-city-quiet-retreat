@@ -4,6 +4,7 @@ export const WEEKDAY_RATE = 150;
 export const WEEKEND_RATE = 180;
 export const EARLY_CHECK_IN_FEE = 30;
 export const LATE_CHECK_OUT_FEE = 30;
+export const MAX_COUNTED_GUESTS = 7;
 // Date ranges include startDate and exclude endDate, matching the check-out date.
 export const CUSTOM_DATE_RATES: CustomDateRate[] = [
   {
