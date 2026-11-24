@@ -1,6 +1,7 @@
 "use server";
 
 import { Resend } from "resend";
+import { getCountries, getCountryCallingCode } from "libphonenumber-js";
 import type { BookingFormData } from "@/app/assets/configs/types/appTypes";
 import { OWNER_EMAIL, FROM_EMAIL, SITE_NAME } from "@/app/assets/configs/constants/siteConfig";
 import { calculateReservationPrice, formatEuro } from "@/app/assets/lib/reservationPricing";
@@ -18,6 +19,9 @@ export async function sendBookingEmail(data: BookingFormData): Promise<{ ok: boo
     !areGuestCountsValid(data.adults, data.children, data.babies)
   ) {
     return { ok: false, error: "Guest counts are invalid." };
+  }
+  if (!getCountries().includes(data.phoneCountry)) {
+    return { ok: false, error: "Phone country selection is invalid." };
   }
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) {
@@ -76,7 +80,7 @@ export async function sendBookingEmail(data: BookingFormData): Promise<{ ok: boo
     "Informational estimate; confirm final price with the host.",
     `Name: ${data.name}`,
     `Email: ${data.email}`,
-    `Phone: ${data.phone}`,
+    `Phone: ${data.phone.trim() ? `+${getCountryCallingCode(data.phoneCountry)} ${data.phone.trim()}` : "(not provided)"}`,
     "",
     "Message:",
     data.message || "(none)",

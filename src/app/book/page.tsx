@@ -3,12 +3,15 @@ import {
   STRIPE_PAYMENT_LINK,
 } from "@/app/assets/configs/constants/siteConfig";
 import BookingForm from "@/app/assets/components/booking-form";
+import { getInitialCountry } from "@/app/assets/lib/getInitialLanguage";
 import Text from "@/app/assets/components/text";
 import { bookMetadata } from "@/app/assets/configs/metadata";
 
 export const metadata = bookMetadata;
 
-export default function BookPage() {
+export default async function BookPage() {
+  const initialPhoneCountry = await getInitialCountry();
+
   return (
     <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6">
       <div className="mb-10">
@@ -22,7 +25,7 @@ export default function BookPage() {
         </p>
       </div>
 
-      <BookingForm />
+      <BookingForm initialPhoneCountry={initialPhoneCountry} />
 
       <section className="mt-14 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-6">
         <h2 className="text-xl font-semibold text-[var(--foreground)]">

@@ -58,6 +58,7 @@ export function translateBookingError(
     "Booking dates must be valid calendar dates.": "Датите за резервация трябва да са валидни календарни дати.",
     "Check-out must be after check-in.": "Датата на напускане трябва да е след датата на настаняване.",
     "Guest counts are invalid.": "Броят на гостите е невалиден.",
+    "Phone country selection is invalid.": "Избраната държава за телефонния код е невалидна.",
     "Something went wrong.": "Възникна грешка.",
   };
   const calendarStatus = message.match(/^Airbnb calendar could not be loaded \(HTTP (\d+)\)\.$/);
